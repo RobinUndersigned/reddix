@@ -10,8 +10,10 @@ const morgan_1 = __importDefault(require("morgan"));
 const helmet_1 = __importDefault(require("helmet"));
 const routes_1 = __importDefault(require("./routes"));
 const errorHandler_1 = __importDefault(require("./middleware/errorHandler"));
+const cors_1 = __importDefault(require("cors"));
 const app = (0, express_1.default)();
 app.use((0, helmet_1.default)()); // https://expressjs.com/en/advanced/best-practice-security.html#use-helmet
+app.use((0, cors_1.default)());
 app.use((0, morgan_1.default)('dev'));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));

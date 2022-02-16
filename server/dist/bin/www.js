@@ -23,7 +23,7 @@ function normalizePort(val) {
     return false;
 }
 // Get port from environment and store in Express.
-const port = normalizePort(process.env.PORT || '3000');
+const port = normalizePort(process.env.PORT || '5000');
 app_1.default.set('port', port);
 // Create the HTTP server
 const server = http_1.default.createServer(app_1.default);

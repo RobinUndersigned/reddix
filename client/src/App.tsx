@@ -18,7 +18,7 @@ function classNames(...classes: string[]) {
 
 function App() {
   useAsyncEffect(async () => {
-    const res = await axios.get("http://localhost:3000/");
+    const res = await axios.get("http://localhost:3050/api/");
 
     console.log(res);
   });
