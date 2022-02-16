@@ -2,6 +2,8 @@ import React, {Fragment} from 'react';
 import './App.css';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import {BellIcon, MenuIcon, XIcon} from "@heroicons/react/solid";
+import useAsyncEffect from "use-async-effect";
+import axios from "axios";
 
 const navigation = [
   { name: 'Dashboard', href: '#', current: true },
@@ -15,6 +17,11 @@ function classNames(...classes: string[]) {
 }
 
 function App() {
+  useAsyncEffect(async () => {
+    const res = await axios.get("http://localhost:3000/");
+
+    console.log(res);
+  });
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
