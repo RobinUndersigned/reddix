@@ -13,18 +13,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const PrismaClient_1 = __importDefault(require("../db/PrismaClient"));
 const router = express_1.default.Router();
 router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.send({ message: "hello world!" });
+    try {
+        const users = yield PrismaClient_1.default.user.findMany();
+        res.send(users);
+    }
+    catch (err) {
+        console.log(err);
+    }
 }));
-// get the values
-router.get("/values/all", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    return false;
-}));
-router.post("/values", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!req.body.value)
-        res.send({ working: false });
+router.get("/:userId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = parseInt(req.params.userId, 10);
+    try {
+        console.log(req.params);
+        const user = yield PrismaClient_1.default.user.findUnique({
+            where: {
+                id,
+            },
+        });
+        console.log(user);
+        res.send(user);
+    }
+    catch (err) {
+        console.log(err);
+    }
     res.send({ working: true });
 }));
 exports.default = router;
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=users.js.map

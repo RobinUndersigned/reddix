@@ -3,6 +3,9 @@
     "module": "commonjs",
     "esModuleInterop": true,
     "target": "es6",
+    "lib": ["esnext"],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "noImplicitAny": true,
     "moduleResolution": "node",
     "sourceMap": true,
@@ -11,10 +14,11 @@
     "paths": {
       "*": [
         "node_modules/*"
-      ]
+      ],
     }
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    ""
   ]
 }
