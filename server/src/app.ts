@@ -5,6 +5,7 @@ import logger from "morgan";
 import helmet from 'helmet'
 import indexRouter from "./routes"
 import usersRouter from "./routes/users"
+import authRouter from "./routes/auth"
 import errorHandler from "./middleware/errorHandler"
 import cors from "cors"
 import dotenv from "dotenv"
@@ -21,6 +22,7 @@ app.use(cookieParser());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/auth', authRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

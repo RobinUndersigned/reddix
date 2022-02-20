@@ -12,36 +12,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
+const passport_local_1 = require("passport-local");
+const bcrypt_1 = __importDefault(require("bcrypt"));
+const config_1 = require("./config");
 const PrismaClient_1 = __importDefault(require("../db/PrismaClient"));
-const router = express_1.default.Router();
-router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const localStrategy = new passport_local_1.Strategy((email, password, done) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield PrismaClient_1.default.user.findUnique({ where: { email } });
+    if (!user)
+        return done(null, null, { message: "Email Addresse nicht gefunden." });
     try {
-        const users = yield PrismaClient_1.default.user.findMany();
-        res.send(users);
+        if (yield bcrypt_1.default.compare(password, user.password)) {
+            return done(null, user);
+        }
+        else {
+            return done(null, false, { message: "Passwort falsch!" });
+        }
     }
     catch (err) {
-        console.log(err);
-        res.status(err.status || 500).send(err);
+        return done(err);
     }
 }));
-router.get("/:userId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = parseInt(req.params.userId, 10);
-    try {
-        const user = yield PrismaClient_1.default.user.findUnique({
-            where: {
-                id,
-            },
-            include: {
-                Posts: true,
-            },
-        });
-        res.send(user);
-    }
-    catch (err) {
-        res.status(err.status || 500).send(err);
-        console.log(err);
-    }
-}));
-exports.default = router;
-//# sourceMappingURL=users.js.map
+localStrategy.name = config_1.local.strategyName;
+exports.default = localStrategy;
+//# sourceMappingURL=auth.js.map
