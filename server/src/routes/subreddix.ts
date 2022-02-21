@@ -1,41 +1,38 @@
 import express from "express"
 import Db from "../db/PrismaClient"
 import { Prisma } from '@prisma/client'
-import { assert } from 'superstruct'
-import bcrypt from "bcrypt";
-import { sign } from "jsonwebtoken";
-import SignupValidation from "../auth/SignupValidation";
-import SigninValidation from "../auth/SigninValidation";
+import {assert, object, optional, size, string} from 'superstruct'
+import authHandler from "../middleware/authHandler";
+import DbClient from "../db/PrismaClient";
 
 const router = express.Router();
 
-router.post('/register', async (req, res) => {
+const SubreddixValidation = object(
+  {
+    name: size(string(), 1, 50),
+    description: optional(size(string(), 1, 350))
+  }
+);
+
+router.post('/', authHandler, async (req, res) => {
   try {
-    assert(req.body, SignupValidation)
+    assert(req.body, SubreddixValidation)
 
-    const existingEmail = await Db.user.findUnique({ where: { email: req.body.email } })
-    if (existingEmail) return res.status(400).send("Email already taken")
+    const name = req.body.name.replace(/ /g, "").trim()
+    const existingSubreddix = await Db.subreddix.findUnique({ where: { name } })
+    if (existingSubreddix) return res.status(400).send("Name already taken")
 
-    const existingUserName = await Db.user.findUnique({ where: { userName: req.body.userName } })
-    if (existingUserName) return res.status(400).send("Username already taken")
-
-    if (existingUserName && existingEmail) return res.status(400).send("Email and Username taken")
-
-    const salt = await bcrypt.genSalt(10)
-
-    const userData: Prisma.UserCreateInput = {
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-      userName: req.body.userName,
-      password: await bcrypt.hash(req.body.password, salt)
+    const subreddixData: Prisma.SubreddixCreateInput = {
+      name,
+      url: name.toLowerCase(),
+      description: req.body.description,
     }
 
-    const newUser = await Db.user.create({
-      data: userData
+    const newSubreddix = await Db.subreddix.create({
+      data: subreddixData
     })
 
-    return res.send({ id: newUser.id })
+    return res.send({ ...newSubreddix })
 
   } catch(err) {
 
@@ -43,46 +40,45 @@ router.post('/register', async (req, res) => {
     if (value === undefined) {
       return res.status(400).send({ error: `${key} required` })
     } else if (type === 'never') {
-      return res.status(400).send({ error: `User attribute unknown` })
+      return res.status(400).send({ error: `Subreddix attribute unknown` })
     } else {
       return res.status(400).send({ error: `${key} invalid` })
     }
+
+    return res.status(500).send(err)
   }
 });
 
 
-router.post('/login', async (req, res) => {
+router.get('/', authHandler, async (req, res) => {
   try {
-    assert(req.body, SigninValidation)
-
-    const existingUser = await Db.user.findUnique({ where: { userName: req.body.userName } })
-    if (!existingUser) return res.status(400).send({ error: "Username or password wrong" })
-
-    const validPassword = await bcrypt.compare(req.body.password, existingUser.password)
-    if (!validPassword) return res.status(400).send({ error: "Username or password wrong" })
-
-    const tokenPayload = {
-      id: existingUser.id,
-      firstName: existingUser.firstName,
-      lastName: existingUser.lastName,
-      email: existingUser.email,
-      userName: existingUser.userName,
-    }
-
-    const token = sign(tokenPayload, process.env.AUTH_SECRET);
-
-    return res.header('auth-token', token).send({ token });
+    const subreddixs = await DbClient.subreddix.findMany()
+    return res.send(subreddixs);
   } catch(err) {
+    console.log(err);
+    res.status(err.status || 500).send(err);
+  }
+});
 
-    const { key, value, type } = err
+router.get('/:subreddixUrl', authHandler, async (req, res) => {
+  const subreddixUrl = req.params.subreddixUrl.toString();
 
-    if (value === undefined) {
-      return res.status(400).send({ error: `${key} required` })
-    } else if (type === 'never') {
-      return res.status(400).send({ error: `User attribute unknown` })
-    } else {
-      return res.status(400).send({ error: `Username or password invalid`})
-    }
+  try {
+    const subreddix = await DbClient.subreddix.findUnique({
+      where: {
+        url: subreddixUrl,
+      },
+      include: {
+        Posts: true,
+      },
+    })
+
+    if (!subreddix) return res.status(400).send({ error: "Subreddix not found" })
+    return res.send({ ...subreddix });
+
+  } catch(err) {
+    console.log(err);
+    return res.status(err.status || 500).send(err);
   }
 });
 

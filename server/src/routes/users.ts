@@ -16,7 +16,9 @@ router.get('/', authHandler, async (req, res) => {
 
 
 router.get("/:userId", authHandler, async (req, res) => {
- const id = parseInt(req.params.userId, 10)
+  const id = parseInt(req.params.userId, 10)
+  if (isNaN(id)) return res.status(400).send({ error: "User not found" })
+
   try {
     const user = await DbClient.user.findUnique({
       where: {
@@ -27,12 +29,13 @@ router.get("/:userId", authHandler, async (req, res) => {
       },
     })
 
-    res.send(user);
-  } catch(err) {
-    res.status(err.status || 500).send(err);
-    console.log(err);
-  }
+    if (!user) return res.status(400).send({ error: "User not found" })
+    return res.send({ user });
 
+  } catch(err) {
+    console.log(err);
+    return res.status(err.status || 500).send(err);
+  }
 });
 
 

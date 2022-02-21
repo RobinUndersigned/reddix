@@ -13,8 +13,13 @@ router.post('/register', async (req, res) => {
   try {
     assert(req.body, SignupValidation)
 
-    const existingUser = await Db.user.findUnique({where: {email: req.body.email}})
-    if (existingUser) return res.status(400).send("Email already exists")
+    const existingEmail = await Db.user.findUnique({ where: { email: req.body.email } })
+    if (existingEmail) return res.status(400).send("Email already taken")
+
+    const existingUserName = await Db.user.findUnique({ where: { userName: req.body.userName } })
+    if (existingUserName) return res.status(400).send("Username already taken")
+
+    if (existingUserName && existingEmail) return res.status(400).send("Email and Username taken")
 
     const salt = await bcrypt.genSalt(10)
 
@@ -22,6 +27,7 @@ router.post('/register', async (req, res) => {
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       email: req.body.email,
+      userName: req.body.userName,
       password: await bcrypt.hash(req.body.password, salt)
     }
 
@@ -41,6 +47,8 @@ router.post('/register', async (req, res) => {
     } else {
       return res.status(400).send({ error: `${key} invalid` })
     }
+
+    return res.status(500).send(err)
   }
 });
 
@@ -49,17 +57,18 @@ router.post('/login', async (req, res) => {
   try {
     assert(req.body, SigninValidation)
 
-    const existingUser = await Db.user.findUnique({where: {email: req.body.email}})
-    if (!existingUser) return res.status(400).send({ error: "Email or password wrong" })
+    const existingUser = await Db.user.findUnique({ where: { userName: req.body.userName } })
+    if (!existingUser) return res.status(400).send({ error: "Username or password wrong" })
 
     const validPassword = await bcrypt.compare(req.body.password, existingUser.password)
-    if (!validPassword) return res.status(400).send({ error: "Email or password wrong" })
+    if (!validPassword) return res.status(400).send({ error: "Username or password wrong" })
 
     const tokenPayload = {
       id: existingUser.id,
       firstName: existingUser.firstName,
       lastName: existingUser.lastName,
-      email: existingUser.email
+      email: existingUser.email,
+      userName: existingUser.userName,
     }
 
     const token = sign(tokenPayload, process.env.AUTH_SECRET);
@@ -74,8 +83,10 @@ router.post('/login', async (req, res) => {
     } else if (type === 'never') {
       return res.status(400).send({ error: `User attribute unknown` })
     } else {
-      return res.status(400).send({ error: `Email or password invalid`})
+      return res.status(400).send({ error: `Username or password invalid`})
     }
+
+    return res.status(500).send(err)
   }
 });
 

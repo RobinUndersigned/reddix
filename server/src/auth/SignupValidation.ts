@@ -7,9 +7,10 @@ const SignupValidation = object({
   // password is between 7 and 30 characters long
   password: size(string(), 7, 30),
   // first name is between 2 and 50 characters long
-  firstName: size(string(), 2, 50),
+  firstName: size(string(), 2, 30),
   // last name is between 2 and 50 characters long
-  lastName: size(string(), 2, 50),
+  lastName: size(string(), 2, 30),
+  userName: size(string(), 1, 30),
 })
 
 export default SignupValidation;

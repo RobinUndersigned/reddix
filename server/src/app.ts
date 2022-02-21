@@ -6,9 +6,11 @@ import helmet from 'helmet'
 import indexRouter from "./routes"
 import usersRouter from "./routes/users"
 import authRouter from "./routes/auth"
+import subreddixRouter from "./routes/subreddix";
 import errorHandler from "./middleware/errorHandler"
 import cors from "cors"
 import dotenv from "dotenv"
+
 
 dotenv.config();
 
@@ -23,6 +25,7 @@ app.use(cookieParser());
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
+app.use('/r', subreddixRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
