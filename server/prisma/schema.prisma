@@ -8,13 +8,15 @@ datasource db {
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
-  title     String   @db.VarChar(255)
-  createdAt DateTime @default(now()) @db.Timestamp(6)
-  content   String?
-  published Boolean  @default(false)
-  authorId  Int
-  User      User     @relation(fields: [authorId], references: [id])
+  id           Int       @id @default(autoincrement())
+  title        String    @db.VarChar(255)
+  createdAt    DateTime  @default(now()) @db.Timestamp(6)
+  content      String?
+  published    Boolean   @default(false)
+  authorId     Int
+  User         User      @relation(fields: [authorId], references: [id])
+  subreddixId  Int
+  Subreddix    Subreddix @relation(fields: [subreddixId], references: [id])
 }
 
 model Profile {
@@ -34,6 +36,15 @@ model User {
   role      Role      @default(USER)
   Posts     Post[]
   Profile   Profile?
+}
+
+model Subreddix {
+    id          Int       @id @default(autoincrement())
+    name        String    @unique @db.VarChar(255)
+    url         String    @unique @db.VarChar(255)
+    description String?   @db.VarChar(255)
+    createdAt   DateTime  @default(now()) @db.Timestamp(6)
+    Posts       Post[]
 }
 
 enum Role {
