@@ -6,7 +6,14 @@ const router = express.Router();
 
 router.get('/', authHandler, async (req, res) => {
   try {
-    const users = await DbClient.user.findMany()
+    const users = await DbClient.user.findMany({ select: {
+      id: true,
+      userName: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+      role: true
+    }})
     res.send(users);
   } catch(err) {
     console.log(err);
@@ -16,13 +23,13 @@ router.get('/', authHandler, async (req, res) => {
 
 
 router.get("/:userId", authHandler, async (req, res) => {
-  const id = parseInt(req.params.userId, 10)
-  if (isNaN(id)) return res.status(400).send({ error: "User not found" })
+  const userId= parseInt(req.params.userId, 10)
+  if (isNaN(userId)) return res.status(400).send({ error: "User not found" })
 
   try {
     const user = await DbClient.user.findUnique({
       where: {
-        id,
+        id: userId,
       },
       include: {
         Posts: true,
@@ -30,7 +37,8 @@ router.get("/:userId", authHandler, async (req, res) => {
     })
 
     if (!user) return res.status(400).send({ error: "User not found" })
-    return res.send({ user });
+    const { id, firstName, lastName, email, userName, Posts, role } = user;
+    return res.send({ id, firstName, lastName, email, userName, Posts, role });
 
   } catch(err) {
     console.log(err);

@@ -12,12 +12,12 @@ const router = express.Router();
 router.post('/register', async (req, res) => {
   try {
     assert(req.body, SignupValidation)
-
+    console.log(req);
     const existingEmail = await Db.user.findUnique({ where: { email: req.body.email } })
-    if (existingEmail) return res.status(400).send("Email already taken")
+    if (existingEmail) return res.status(400).send({ error: "Email already taken" })
 
     const existingUserName = await Db.user.findUnique({ where: { userName: req.body.userName } })
-    if (existingUserName) return res.status(400).send("Username already taken")
+    if (existingUserName) return res.status(400).send({ error: " Username already taken" })
 
     if (existingUserName && existingEmail) return res.status(400).send("Email and Username taken")
 
