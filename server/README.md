@@ -1,20 +1,31 @@
-![example workflow](https://github.com/rzgry/Express-REST-API-Template/actions/workflows/node.js.yml/badge.svg)
-[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
-
-# Express-REST-API-Template
-
-Simple express boilerplate based off of [express-generator](https://expressjs.com/en/starter/generator.html). Includes [eslint](https://eslint.org) and [prettier](https://prettier.io) for linting/code formatting, [nodemon](https://github.com/remy/nodemon) for automatic server restarting, and [Jest](https://jestjs.io) for testing.
-
 ## Getting Started
+This is the backend code for reddix. In includes an ExpressJs (TS) API with JWT authentication.
+it uses Postgresql as the database layer and [Prisma IO](https://www.prisma.io/) for ORM. is being used.
 
 ### Install dependencies
-
 ```
 npm install
 ```
 
-### Running in development
+### Setup .env file
+Create .env File and add DATABASE_URL according to the prisma documentation to it.
+Also make sure to add an AUTH_SECRET for JWT to work.
 
+Here is an example:
+```
+AUTH_SECRET="E7CF478D061D51D11B63DE22EE97DDBD9E81C77CB2B9EECE42B028B48CDD254C"
+DATABASE_URL="postgresql://johndoe:randompassword@localhost:5432/mydb?schema=public"
+```
+
+### Seeding the database
+In order to seed the database run:
+```
+npx prisma db seed
+```
+This will run the seed.ts file in the prisma directory and for now create 10 testusers.
+
+
+### Running in development
 ```
 npm run dev
 ```
@@ -25,10 +36,9 @@ npm run dev
 npm start
 ```
 
-Runs on localhost:3000 by default but can be configured using the `PORT` environment variable.
+Runs on localhost:5000 by default but can be configured using the `PORT` environment variable.
 
 ### Running tests
-
 ```
 npm test
 
