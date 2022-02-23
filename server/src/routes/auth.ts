@@ -9,7 +9,7 @@ import SigninValidation from "../auth/SigninValidation";
 
 const router = express.Router();
 
-router.post('/register', async (req, res) => {
+router.post('/signup', async (req, res) => {
   try {
     assert(req.body, SignupValidation)
     console.log(req);
@@ -53,7 +53,7 @@ router.post('/register', async (req, res) => {
 });
 
 
-router.post('/login', async (req, res) => {
+router.post('/signin', async (req, res) => {
   try {
     assert(req.body, SigninValidation)
 
@@ -81,9 +81,9 @@ router.post('/login', async (req, res) => {
     if (value === undefined) {
       return res.status(400).send({ error: `${key} required` })
     } else if (type === 'never') {
-      return res.status(400).send({ error: `User attribute unknown` })
+      return res.status(400).send()
     } else {
-      return res.status(400).send({ error: `Username or password invalid`})
+      return res.status(400).send({ error: `Username or password invalid` })
     }
 
     return res.status(500).send(err)
