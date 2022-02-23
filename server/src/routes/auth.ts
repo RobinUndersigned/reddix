@@ -57,11 +57,21 @@ router.post('/signin', async (req, res) => {
   try {
     assert(req.body, SigninValidation)
 
-    const existingUser = await Db.user.findUnique({ where: { userName: req.body.userName } })
+    const existingUser = await Db.user.findUnique({
+      where: {
+        userName: req.body.userName
+      },
+      include: {
+        Profile: true
+      }
+    })
     if (!existingUser) return res.status(400).send({ error: "Username or password wrong" })
 
     const validPassword = await bcrypt.compare(req.body.password, existingUser.password)
     if (!validPassword) return res.status(400).send({ error: "Username or password wrong" })
+
+    const {id, avatar, bio} = existingUser.Profile
+    const base64 = "data:image/jpg;base64," + avatar.toString('base64')
 
     const tokenPayload = {
       id: existingUser.id,
@@ -69,6 +79,11 @@ router.post('/signin', async (req, res) => {
       lastName: existingUser.lastName,
       email: existingUser.email,
       userName: existingUser.userName,
+      Profile: {
+        id,
+        avatar: base64,
+        bio
+      }
     }
 
     const token = sign(tokenPayload, process.env.AUTH_SECRET);

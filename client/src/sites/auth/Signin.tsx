@@ -36,7 +36,7 @@ export default function Signin(): ReactElement {
           title: 'Sign in successful.',
           description: "You've successfully logged in.",
           status: 'success',
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
           position: 'top-right'
         })
@@ -50,7 +50,8 @@ export default function Signin(): ReactElement {
           firstName: decoded.firstName,
           lastName: decoded.lastName,
           email: decoded.email,
-          userName: decoded.userName
+          userName: decoded.userName,
+          Profile: decoded.Profile
         }, () => {
           navigate("/dashboard", { replace: true })
         })
@@ -61,12 +62,12 @@ export default function Signin(): ReactElement {
           title: 'Authorization error.',
           description: `${err.response?.data.error}`,
           status: 'error',
-          duration: 5000,
+          duration: 3000,
           isClosable: true,
           position: 'top-right'
         })
       }
-    }, [usernameRef]);
+    }, [usernameRef, auth]);
 
   return (
     <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>

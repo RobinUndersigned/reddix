@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {
   Box,
   Flex,
@@ -14,7 +14,7 @@ import {
   PopoverContent,
   useColorModeValue,
   useBreakpointValue,
-  useDisclosure,
+  useDisclosure, Menu, MenuButton, Avatar, MenuList, MenuItem, MenuDivider,
 } from '@chakra-ui/react';
 import {
   HamburgerIcon,
@@ -22,9 +22,17 @@ import {
   ChevronDownIcon,
   ChevronRightIcon,
 } from '@chakra-ui/icons';
+import useAuth from "../hooks/useAuth";
+import {useNavigate} from "react-router-dom";
 
 export default function HeaderNav() {
+  const [avatarImage, setAvatarImage] = useState<string>("https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9")
   const { isOpen, onToggle } = useDisclosure();
+  const auth = useAuth();
+
+  useEffect(() => {
+    if (auth.user?.Profile?.avatar) setAvatarImage(auth.user?.Profile.avatar)
+  }, [auth, auth.user])
 
   return (
     <>
@@ -63,34 +71,8 @@ export default function HeaderNav() {
             <DesktopNav />
           </Flex>
         </Flex>
-
-        <Stack
-          flex={{ base: 1, md: 0 }}
-          justify={'flex-end'}
-          direction={'row'}
-          spacing={6}>
-          <Button
-            as={'a'}
-            fontSize={'sm'}
-            fontWeight={400}
-            variant={'link'}
-            href={'/auth/signin'}>
-            Sign In
-          </Button>
-          <Button
-            as={'a'}
-            display={{ base: 'none', md: 'inline-flex' }}
-            fontSize={'sm'}
-            fontWeight={600}
-            bg={'blue.400'}
-            href={'/auth/signup'}
-            color={'white'}
-            _hover={{
-              bg: 'blue.500',
-            }}>
-            Sign Up
-          </Button>
-        </Stack>
+        { auth.user && <UserMenu avatar={avatarImage}/> }
+        { !auth.user && <AuthCta/> }
       </Flex>
 
       <Collapse in={isOpen} animateOpacity>
@@ -244,6 +226,73 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
   );
 };
 
+const AuthCta = () => {
+  return (
+    <Stack
+      flex={{ base: 1, md: 0 }}
+      justify={'flex-end'}
+      direction={'row'}
+      spacing={6}>
+      <Button
+        as={'a'}
+        fontSize={'sm'}
+        fontWeight={400}
+        variant={'link'}
+        href={'/auth/signin'}>
+        Sign In
+      </Button>
+      <Button
+        as={'a'}
+        display={{ base: 'none', md: 'inline-flex' }}
+        fontSize={'sm'}
+        fontWeight={600}
+        bg={'blue.400'}
+        href={'/auth/signup'}
+        color={'white'}
+        _hover={{
+          bg: 'blue.500',
+        }}>
+        Sign Up
+      </Button>
+    </Stack>
+  )
+}
+
+const UserMenu = ({ avatar }: { avatar: string }) => {
+  const auth = useAuth();
+  const navigate = useNavigate();
+  const handleSignout = useCallback(() => {
+    auth.signout(() => {
+      localStorage.removeItem("reddixAuthToken")
+      navigate("/dashboard", { replace: true })
+    })
+  }, [auth.user])
+
+  return (
+    <Flex alignItems={'center'}>
+      <Menu>
+        <MenuButton
+          as={Button}
+          rounded={'full'}
+          variant={'link'}
+          cursor={'pointer'}
+          minW={0}>
+          <Avatar
+            size={'sm'}
+            src={avatar}
+          />
+        </MenuButton>
+        <MenuList>
+          <MenuItem>Link 1</MenuItem>
+          <MenuItem>Link 2</MenuItem>
+          <MenuDivider />
+          <MenuItem onClick={() => handleSignout()}>Signout</MenuItem>
+        </MenuList>
+      </Menu>
+    </Flex>
+  )
+
+}
 interface NavItem {
   label: string;
   subLabel?: string;

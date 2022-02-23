@@ -22,6 +22,7 @@ model Post {
 model Profile {
   id     Int     @id @default(autoincrement())
   bio    String?
+  avatar Bytes?  @db.ByteA
   userId Int     @unique
   User   User    @relation(fields: [userId], references: [id])
 }

@@ -2,26 +2,45 @@ import { Prisma } from '@prisma/client'
 import Db from "../src/db/PrismaClient"
 import { faker } from "@faker-js/faker";
 import {genSalt, hash} from "bcrypt";
+import axios from "axios";
+import * as fs from "fs";
 
 function generateRange(size: number): number[] {
   return [...Array.from(Array(size).keys())];
 }
 
+async function getAvatar(): Promise<Buffer> {
+  try {
+    const avatar = await axios.get(faker.image.avatar(),{responseType: 'arraybuffer'});
+    return Buffer.from(avatar.data)
+  } catch(err) {
+    console.log(err)
+  }
+}
+
 /**
  * generate Users
  */
-
 async function generateUser()  {
   const salt = await genSalt(10)
+  const avatar = await getAvatar()
   const seedUser: Prisma.UserCreateInput = {
     firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),
-    userName: `${faker.name.firstName()+faker.name.lastName()}`,
+    userName: faker.internet.userName(),
     email: faker.internet.email(),
-    password: await hash("password", salt)
+    password: await hash("password", salt),
+    Profile: {
+      create: {
+        bio: faker.lorem.sentence(),
+        avatar: avatar,
+      }
+    }
   }
   return seedUser;
 }
+
+
 
 /**
  * Generate Subreddix

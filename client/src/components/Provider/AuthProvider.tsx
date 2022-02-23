@@ -1,9 +1,10 @@
 import React from "react";
-import {AuthContext, AuthContextType, AuthContextUser} from "../../context/AuthContext";
+import {AuthContextType, AuthContextUser} from "../../context/AuthContext";
 import {authProvider} from "../../utils/authProvider";
 import useAuth from "../../hooks/useAuth";
 import {Navigate, useLocation} from "react-router-dom";
 import jwtDecode from "jwt-decode";
+import {AuthContext} from "../../context/AuthContext";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const encryptedToken = localStorage.getItem('reddixAuthToken')
@@ -25,13 +26,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
-
   const value: AuthContextType = { user, signin, signout }
-
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
-
-
 
 export function RequireAuth({ children }: { children: JSX.Element }) {
   const auth = useAuth()
@@ -42,7 +39,7 @@ export function RequireAuth({ children }: { children: JSX.Element }) {
     // trying to go to when they were redirected. This allows us to send them
     // along to that page after they login, which is a nicer user experience
     // than dropping them off on the home page.
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/auth/signin" state={{ from: location }} replace />;
   }
 
   return children
