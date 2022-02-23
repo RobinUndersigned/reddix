@@ -3,7 +3,7 @@ import Db from "../src/db/PrismaClient"
 import { faker } from "@faker-js/faker";
 import {genSalt, hash} from "bcrypt";
 import axios from "axios";
-import * as fs from "fs";
+
 
 function generateRange(size: number): number[] {
   return [...Array.from(Array(size).keys())];
