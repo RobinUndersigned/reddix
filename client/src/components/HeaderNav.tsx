@@ -302,7 +302,7 @@ interface NavItem {
 
 const NAV_ITEMS: Array<NavItem> = [
   {
-    label: 'Inspiration',
+    label: 'Home',
     children: [
       {
         label: 'Explore Design Work',
@@ -317,7 +317,7 @@ const NAV_ITEMS: Array<NavItem> = [
     ],
   },
   {
-    label: 'Find Work',
+    label: 'Discover',
     children: [
       {
         label: 'Job Board',
@@ -332,11 +332,11 @@ const NAV_ITEMS: Array<NavItem> = [
     ],
   },
   {
-    label: 'Learn Design',
+    label: 'Trending',
     href: '#',
   },
   {
-    label: 'Hire Designers',
+    label: 'Communities',
     href: '#',
   },
 ];

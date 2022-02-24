@@ -8,7 +8,8 @@ import {ChakraProvider} from "@chakra-ui/react";
 import axios from "axios";
 
 axios.defaults.baseURL = 'http://localhost:5000';
-axios.defaults.headers.common['auth-token'] = 'AUTH TOKEN';
+const token = localStorage.getItem("reddixAuthToken");
+if (token) axios.defaults.headers.common['auth-token'] = token;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 axios.interceptors.request.use(request => {

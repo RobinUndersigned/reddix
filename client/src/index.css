@@ -15,9 +15,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-#root {
-  @apply h-full;
-}
 
 code {
   font-family: IBMPlexSans, Arial, sans-serif;
