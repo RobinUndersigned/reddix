@@ -1,10 +1,11 @@
 import React from 'react';
-import './App.css';
 
 
 function DashboardHome() {
   return (
-    <PublicRoutes></PublicRoutes>
+  <div>
+    Test
+  </div>
   );
 }
 
@@ -12,4 +13,4 @@ function DashboardHome() {
 
 
 
-export default App;
+export default DashboardHome;

@@ -5,6 +5,7 @@ import Signup from "../sites/auth/Signup";
 import Signin from "../sites/auth/Signin";
 import DashboardLayout from "../layouts/DashboardLayout";
 import {AuthProvider, RequireAuth} from "../components/Provider/AuthProvider";
+import DashboardHome from "../sites/dashboard/DashboardHome";
 
 function PublicRoutes(): ReactElement {
 
@@ -15,7 +16,10 @@ function PublicRoutes(): ReactElement {
             <RequireAuth>
               <DashboardLayout/>
             </RequireAuth>
-          }/>
+          }>
+            <Route index element={<DashboardHome/>} />
+            <Route path="*" element={<NoMatch />} />
+          </Route>
         <Route path="/auth" element={<AuthLayout />}>
           <Route path="signin" element={<Signin />} />
           <Route path="signup" element={<Signup />} />

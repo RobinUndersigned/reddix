@@ -4,6 +4,7 @@ import {
   Stack
 } from '@chakra-ui/react';
 import HeaderNav from "../components/HeaderNav";
+import {Outlet} from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 
 
@@ -20,7 +21,7 @@ export default function DashboardLayout() {
           <HeaderNav />
         </Box>
         <Box h={"100%"}>
-          Test
+          <Outlet />
         </Box>
       </Stack>
     </Box>

@@ -67,7 +67,7 @@ export default function Signin(): ReactElement {
           position: 'top-right'
         })
       }
-    }, [usernameRef, auth]);
+    }, [usernameRef, passwordRef]);
 
   return (
     <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
