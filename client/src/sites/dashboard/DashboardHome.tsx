@@ -1,7 +1,16 @@
 import React, {useState} from 'react';
 import useAsyncEffect from "use-async-effect";
 import axios from "axios";
-import {Box, Center, Flex, Heading, Stack, Text, useColorModeValue} from "@chakra-ui/react";
+import {Box, Center, Container, Flex, Heading, Stack, Text, useColorModeValue} from "@chakra-ui/react";
+
+type VoteValue = -1 | 0 | 1
+interface Vote {
+  id: number,
+  userId: number,
+  postId: number,
+  createdAt: string,
+  voteValue: VoteValue
+}
 
 interface Post {
   id: number,
@@ -18,6 +27,7 @@ interface Post {
     description: string,
     createdAt: string
   }
+  Votes: Vote[]
 }
 
 
@@ -28,7 +38,7 @@ function DashboardHome() {
     setPosts(posts.data)
   }, [])
   return (
-    <Box w={"1200px"} margin="auto">
+    <Container maxW="container.xl">
       <Flex
         direction={"column"}
         gap={"1rem"}
@@ -37,11 +47,11 @@ function DashboardHome() {
           return <DashboardPost key={post.id} {...post}/>
         })}
       </Flex>
-    </Box>
+    </Container>
   );
 }
 
-function DashboardPost({id, title, content, Subreddix}: Post) {
+function DashboardPost({id, title, content, Subreddix, Votes}: Post) {
   return (
       <Box
         rounded={'lg'}
@@ -55,6 +65,7 @@ function DashboardPost({id, title, content, Subreddix}: Post) {
           <Text fontSize="sm">{`/r/${Subreddix.url}`}</Text>
           <Heading as='h3' size='lg'>{title}</Heading>
           <Text fontSize="md">{content}</Text>
+          <Text>{Votes.length}</Text>
         </Stack>
       </Box>
 

@@ -4,7 +4,7 @@ import AuthLayout from "../layouts/AuthLayout";
 import Signup from "../sites/auth/Signup";
 import Signin from "../sites/auth/Signin";
 import DashboardLayout from "../layouts/DashboardLayout";
-import {AuthProvider, RequireAuth} from "../components/Provider/AuthProvider";
+import {AuthProvider, RequireAuth} from "../components/provider/AuthProvider";
 import DashboardHome from "../sites/dashboard/DashboardHome";
 
 function PublicRoutes(): ReactElement {
