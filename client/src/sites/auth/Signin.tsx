@@ -33,7 +33,7 @@ export default function Signin(): ReactElement {
       try {
         const result = await axios.post<{ token: string }>("/auth/signin/", requestBody)
         if (result.data.token) toast({
-          title: 'Sign in successful.',
+          title: 'Welcom back!',
           description: "You've successfully logged in.",
           status: 'success',
           duration: 3000,

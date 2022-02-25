@@ -24,14 +24,19 @@ import {
 } from '@chakra-ui/icons';
 import useAuth from "../hooks/useAuth";
 import {useNavigate} from "react-router-dom";
+import useAsyncEffect from "use-async-effect";
+import axios from "axios";
 
 export default function HeaderNav() {
   const [avatarImage, setAvatarImage] = useState<string>("https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9")
   const { isOpen, onToggle } = useDisclosure();
   const auth = useAuth();
 
-  useEffect(() => {
-    if (auth.user?.Profile?.avatar) setAvatarImage(auth.user?.Profile.avatar)
+  useAsyncEffect(async () => {
+    if (auth.user?.Profile.avatarId) {
+      const avatar = await axios.get(`/media/${auth.user?.Profile.avatarId}`);
+      if (avatar.data.file) setAvatarImage(avatar.data.file)
+    }
   }, [auth, auth.user])
 
   return (

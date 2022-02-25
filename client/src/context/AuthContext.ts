@@ -3,7 +3,7 @@ import React from "react";
 export interface AuthContextUserProfile {
   id: number,
   bio: string,
-  avatar: string,
+  avatarId: number,
 }
 
 export interface AuthContextUser  {
@@ -12,7 +12,7 @@ export interface AuthContextUser  {
   lastName: string,
   userName: string,
   email: string;
-  Profile?: AuthContextUserProfile | null
+  Profile: AuthContextUserProfile
 }
 
 export interface AuthContextType {
