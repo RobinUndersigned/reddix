@@ -8,11 +8,30 @@ import usersRouter from "./routes/users"
 import authRouter from "./routes/auth"
 import subreddixRouter from "./routes/subreddix";
 import postsRouter from "./routes/posts";
+import mediaRouter from "./routes/media";
+import votesRouter from "./routes/votes";
 import errorHandler from "./middleware/errorHandler"
 import cors from "cors"
 import dotenv from "dotenv"
 
+export interface AuthUserProfile {
+  id: number,
+  bio: string,
+  avatarId: number,
+}
 
+declare global {
+  namespace Express {
+    interface User {
+      id: number,
+      firstName: string,
+      lastName: string,
+      userName: string,
+      email: string;
+      Profile: AuthUserProfile
+    }
+  }
+}
 dotenv.config();
 
 const app = express();
@@ -28,6 +47,8 @@ app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/r', subreddixRouter);
 app.use('/posts', postsRouter);
+app.use('/media', mediaRouter);
+app.use('/votes', votesRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

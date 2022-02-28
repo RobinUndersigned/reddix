@@ -70,8 +70,7 @@ router.post('/signin', async (req, res) => {
     const validPassword = await bcrypt.compare(req.body.password, existingUser.password)
     if (!validPassword) return res.status(400).send({ error: "Username or password wrong" })
 
-    const {id, avatar, bio} = existingUser.Profile
-    const base64 = "data:image/jpg;base64," + avatar.toString('base64')
+    const {id, avatarId, bio} = existingUser.Profile
 
     const tokenPayload = {
       id: existingUser.id,
@@ -81,7 +80,7 @@ router.post('/signin', async (req, res) => {
       userName: existingUser.userName,
       Profile: {
         id,
-        avatar: base64,
+        avatarId,
         bio
       }
     }

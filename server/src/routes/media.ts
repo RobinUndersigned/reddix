@@ -6,12 +6,8 @@ const router = express.Router();
 
 router.get('/', authHandler, async (req, res) => {
   try {
-    const posts = await DbClient.post.findMany({
-      include: {
-        Subreddix: true
-      }
-    })
-    res.send(posts);
+    const files = await DbClient.media.findMany()
+    res.send(files);
   } catch(err) {
     console.log(err);
     res.status(err.status || 500).send(err);
@@ -19,23 +15,24 @@ router.get('/', authHandler, async (req, res) => {
 });
 
 
-router.get("/:Id", authHandler, async (req, res) => {
-  const userId= parseInt(req.params.userId, 10)
-  if (isNaN(userId)) return res.status(400).send({ error: "User not found" })
+router.get("/:mediaId", authHandler, async (req, res) => {
+  const mediaId= parseInt(req.params.mediaId, 10)
+  if (isNaN(mediaId)) return res.status(400).send({ error: "User not found" })
 
   try {
-    const user = await DbClient.user.findUnique({
+    const media = await DbClient.media.findUnique({
       where: {
-        id: userId,
-      },
-      include: {
-        Posts: true,
+        id: mediaId,
       },
     })
 
-    if (!user) return res.status(400).send({ error: "User not found" })
-    const { id, firstName, lastName, email, userName, Posts, role } = user;
-    return res.send({ id, firstName, lastName, email, userName, Posts, role });
+    if (!media) return res.status(400).send({ error: "File not found" })
+    const {id, title, type, file} = media
+    const base64 = "data:image/jpg;base64," + file.toString('base64')
+    return res.send({
+      id, title, type,
+      file: base64
+    });
 
   } catch(err) {
     console.log(err);

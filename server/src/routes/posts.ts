@@ -8,7 +8,8 @@ router.get('/', authHandler, async (req, res) => {
   try {
     const posts = await DbClient.post.findMany({
       include: {
-        Subreddix: true
+        Subreddix: true,
+        Votes: true,
       }
     })
     res.send(posts);
@@ -19,8 +20,8 @@ router.get('/', authHandler, async (req, res) => {
 });
 
 
-router.get("/:Id", authHandler, async (req, res) => {
-  const userId= parseInt(req.params.userId, 10)
+router.get("/:postId", authHandler, async (req, res) => {
+  const userId= parseInt(req.params.postId, 10)
   if (isNaN(userId)) return res.status(400).send({ error: "User not found" })
 
   try {

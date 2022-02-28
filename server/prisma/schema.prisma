@@ -8,44 +8,66 @@ datasource db {
 }
 
 model Post {
-  id           Int       @id @default(autoincrement())
-  title        String    @db.VarChar(255)
-  createdAt    DateTime  @default(now()) @db.Timestamp(6)
-  content      String?
-  published    Boolean   @default(false)
-  authorId     Int
-  User         User      @relation(fields: [authorId], references: [id])
-  subreddixId  Int
-  Subreddix    Subreddix @relation(fields: [subreddixId], references: [id])
+  id          Int       @id @default(autoincrement())
+  title       String    @db.VarChar(255)
+  createdAt   DateTime  @default(now()) @db.Timestamp(6)
+  content     String?
+  published   Boolean   @default(false)
+  authorId    Int
+  User        User      @relation(fields: [authorId], references: [id])
+  subreddixId Int
+  Subreddix   Subreddix @relation(fields: [subreddixId], references: [id])
+  Votes       Vote[]
 }
 
+model Vote {
+  id         Int        @id @default(autoincrement())
+  voteValue  Int        @default(0)
+  userId     Int        @unique
+  postId     Int
+  createdAt  DateTime   @default(now()) @db.Timestamp(6)
+  User       User       @relation(fields: [userId], references: [id])
+  Post       Post       @relation(fields: [postId], references: [id])
+}
+
+
 model Profile {
-  id     Int     @id @default(autoincrement())
-  bio    String?
-  avatar Bytes?  @db.ByteA
-  userId Int     @unique
-  User   User    @relation(fields: [userId], references: [id])
+  id       Int     @id @default(autoincrement())
+  bio      String?
+  userId   Int     @unique
+  avatarId Int?
+  Avatar   Media?  @relation(fields: [avatarId], references: [id])
+  User     User    @relation(fields: [userId], references: [id])
+}
+
+model Media {
+  id      Int       @id @default(autoincrement())
+  type    String    @default("upload")
+  title   String?
+  file    Bytes     @db.ByteA
+  Profile Profile?
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  firstName String?   @db.VarChar(255)
-  lastName  String?   @db.VarChar(255)
-  userName  String    @unique @db.VarChar(255)
-  email     String    @unique @db.VarChar(255)
-  password  String?   @db.VarChar(255)
-  role      Role      @default(USER)
+  id        Int      @id @default(autoincrement())
+  firstName String?  @db.VarChar(255)
+  lastName  String?  @db.VarChar(255)
+  userName  String   @unique @db.VarChar(255)
+  email     String   @unique @db.VarChar(255)
+  password  String?  @db.VarChar(255)
+  role      Role     @default(USER)
   Posts     Post[]
   Profile   Profile?
+  Votes     Vote[]
 }
 
 model Subreddix {
-    id          Int       @id @default(autoincrement())
-    name        String    @unique @db.VarChar(255)
-    url         String    @unique @db.VarChar(255)
-    description String?   @db.VarChar(255)
-    createdAt   DateTime  @default(now()) @db.Timestamp(6)
-    Posts       Post[]
+  id          Int      @id @default(autoincrement())
+  name        String   @unique @db.VarChar(255)
+  url         String   @unique @db.VarChar(255)
+  description String?  @db.VarChar(255)
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+  Posts       Post[]
 }
 
 enum Role {

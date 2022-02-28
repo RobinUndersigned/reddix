@@ -33,7 +33,12 @@ async function generateUser()  {
     Profile: {
       create: {
         bio: faker.lorem.sentence(),
-        avatar: avatar,
+        Avatar: {
+          create: {
+            title: "User Avatar",
+            file: avatar
+          }
+        },
       }
     }
   }
