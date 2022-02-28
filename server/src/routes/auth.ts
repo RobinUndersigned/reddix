@@ -28,7 +28,10 @@ router.post('/signup', async (req, res) => {
       lastName: req.body.lastName,
       email: req.body.email,
       userName: req.body.userName,
-      password: await bcrypt.hash(req.body.password, salt)
+      password: await bcrypt.hash(req.body.password, salt),
+      Profile: {
+        create: {}
+      }
     }
 
     const newUser = await Db.user.create({

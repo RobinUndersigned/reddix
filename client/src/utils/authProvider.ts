@@ -5,11 +5,14 @@ const authProvider = {
   isAuthenticated: false,
   signin(callback: VoidFunction) {
     authProvider.isAuthenticated = true;
-    setTimeout(callback, 100); // fake async
+    return new Promise((resolve, reject) => {
+      setTimeout(callback, 200);
+      resolve(this.isAuthenticated);
+    })
   },
   signout(callback: VoidFunction) {
     authProvider.isAuthenticated = false;
-    setTimeout(callback, 100);
+    setTimeout(callback, 200);
   }
 };
 

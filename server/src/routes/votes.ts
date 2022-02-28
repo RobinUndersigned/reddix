@@ -18,7 +18,6 @@ router.get('/', authHandler, async (req, res) => {
 
 const VoteValidation = object({
   voteValue: enums([1, 0, -1,]),
-  userId: integer(),
   postId: integer(),
 })
 
@@ -28,7 +27,10 @@ router.post('/', authHandler, async (req, res) => {
 
     const upsertVote = await Db.vote.upsert({
       where: {
-        userId: req.user.id,
+        userId_postId: {
+          userId: req.user.id,
+          postId: req.body.postId
+        },
       },
       update: {
         voteValue: req.body.voteValue,
@@ -38,6 +40,9 @@ router.post('/', authHandler, async (req, res) => {
         voteValue: req.body.voteValue,
         userId: req.user.id
       },
+      include: {
+        Post: true
+      }
     })
 
     return res.send(upsertVote);

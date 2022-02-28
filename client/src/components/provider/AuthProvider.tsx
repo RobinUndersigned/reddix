@@ -12,7 +12,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const [user, setUser] = React.useState<AuthContextUser|null>(decodedToken)
 
-  const signin = (newUser: AuthContextUser, callback: VoidFunction) => {
+  const signin = async (newUser: AuthContextUser, callback: VoidFunction) => {
     return authProvider.signin(() => {
       setUser(newUser);
       callback();
