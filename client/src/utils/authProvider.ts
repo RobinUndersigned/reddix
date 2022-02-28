@@ -5,7 +5,7 @@ const authProvider = {
   isAuthenticated: false,
   signin(callback: VoidFunction) {
     authProvider.isAuthenticated = true;
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       setTimeout(callback, 200);
       resolve(this.isAuthenticated);
     })

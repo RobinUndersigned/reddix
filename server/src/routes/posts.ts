@@ -23,7 +23,14 @@ router.get('/', authHandler, async (req, res) => {
     const result = posts.map((post) => {
       const userVote = post.Votes.find((vote) => vote.userId === req.user.id)
       return {
-        ...post,
+        id: post.id,
+        title: post.title,
+        createdAt: post.createdAt,
+        content: post.content,
+        published: post.published,
+        authorId: post.authorId,
+        subreddixId: post.subreddixId,
+        Subreddix: post.Subreddix,
         userHasVoted: userVote ? true : false,
         userVote: userVote ? userVote : null,
         userVoteValue: userVote ? userVote.voteValue : null,
@@ -42,30 +49,71 @@ router.get('/', authHandler, async (req, res) => {
 
 
 router.get("/:postId", authHandler, async (req, res) => {
-  const userId= parseInt(req.params.postId, 10)
-  if (isNaN(userId)) return res.status(400).send({ error: "User not found" })
+  const postId= parseInt(req.params.postId, 10)
+  if (isNaN(postId)) return res.status(400).send({ error: "User not found" })
 
   try {
-    const user = await DbClient.user.findUnique({
+    const post = await DbClient.post.findUnique({
       where: {
-        id: userId,
+        id: postId,
       },
       include: {
-        Posts: true,
+        Subreddix: true,
+        Votes: true,
       },
     })
 
-    if (!user) return res.status(400).send({ error: "User not found" })
-    const { id, firstName, lastName, email, userName, Posts, role } = user;
+    if (!post) return res.status(400).send({ error: "Post not found" })
+    const userVote = post.Votes.find((vote) => vote.userId === req.user.id)
     return res.send({
-      id,
-      firstName,
-      lastName,
-      email,
-      userName,
-      Posts,
-      role,
-    });
+      id: post.id,
+      title: post.title,
+      createdAt: post.createdAt,
+      content: post.content,
+      published: post.published,
+      authorId: post.authorId,
+      subreddixId: post.subreddixId,
+      Subreddix: post.Subreddix,
+      userHasVoted: userVote ? true : false,
+      userVote: userVote ? userVote : null,
+      userVoteValue: userVote ? userVote.voteValue : null,
+      votesTotal: post.Votes.reduce((acc: number, obj: Vote) => {
+        return acc + obj.voteValue
+      }, 0)
+    })
+
+  } catch(err) {
+    console.log(err);
+    return res.status(err.status || 500).send(err);
+  }
+});
+
+
+router.get("/:postId", authHandler, async (req, res) => {
+  const postId= parseInt(req.params.postId, 10)
+  if (isNaN(postId)) return res.status(400).send({ error: "User not found" })
+
+  try {
+    const post = await DbClient.post.findUnique({
+      where: {
+        id: postId,
+      },
+      include: {
+        Votes: true,
+      },
+    })
+
+    if (!post) return res.status(400).send({ error: "Post not found" })
+    const userVote = post.Votes.find((vote) => vote.userId === req.user.id)
+    return res.send({
+      ...post,
+      userHasVoted: userVote ? true : false,
+      userVote: userVote ? userVote : null,
+      userVoteValue: userVote ? userVote.voteValue : null,
+      votesTotal: post.Votes.reduce((acc: number, obj: Vote) => {
+        return acc + obj.voteValue
+      }, 0)
+    })
 
   } catch(err) {
     console.log(err);

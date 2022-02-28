@@ -17,7 +17,7 @@ router.get('/', authHandler, async (req, res) => {
 
 
 const VoteValidation = object({
-  voteValue: enums([1, 0, -1,]),
+  voteValue: enums([1, 0, -1]),
   postId: integer(),
 })
 
