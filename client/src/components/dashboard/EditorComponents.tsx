@@ -191,10 +191,12 @@ export const Toolbar = forwardRef(
         className,
         css`
           position: relative;
-          padding: 1px 18px 17px;
-          margin: 0 -20px;
+          width: 100%;
+          padding: .5rem .75rem;
           border-bottom: 2px solid #eee;
-          margin-bottom: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: evenly;
         `
       )}
     />

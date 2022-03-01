@@ -10,7 +10,19 @@ import {
 } from 'slate'
 import { withHistory } from 'slate-history'
 import { EditorButton, EditorIcon, Toolbar } from './EditorComponents'
-import {CustomEditor, CustomElement, CustomText} from './custom-typed'
+import {CustomEditor, CustomElement, CustomText} from './custom-types'
+import {
+  MdFormatBold,
+  MdFormatItalic,
+  MdFormatListBulleted,
+  MdFormatListNumbered,
+  MdFormatUnderlined,
+  MdOutlineCode
+} from "react-icons/md";
+import {Box, Button, Flex, Heading, Select, Stack} from "@chakra-ui/react";
+import {BsBlockquoteLeft} from "react-icons/bs";
+import {AiFillMedicineBox} from "react-icons/all";
+import {assertCombobox} from "@headlessui/react/dist/test-utils/accessibility-assertions";
 
 
 const HOTKEYS: { [v: string]: string } = {
@@ -29,37 +41,65 @@ function PostEditor() {
   const editor = useMemo(() => withHistory(withReact(createEditor())), [])
 
   return (
-    <Slate editor={editor} value={value} onChange={value => setValue(value)}>
-      <Toolbar>
-        <MarkButton format="bold" icon="format_bold"/>
-        <MarkButton format="italic" icon="format_italic"/>
-        <MarkButton format="underline" icon="format_underlined"/>
-        <MarkButton format="code" icon="code"/>
-        <BlockButton format="heading-one" icon="looks_one"/>
-        <BlockButton format="heading-two" icon="looks_two"/>
-        <BlockButton format="block-quote" icon="format_quote"/>
-        <BlockButton format="numbered-list" icon="format_list_numbered"/>
-        <BlockButton format="bulleted-list" icon="format_list_bulleted"/>
-      </Toolbar>
-      <Editable
-        renderElement={renderElement}
-        renderLeaf={renderLeaf}
-        placeholder="Enter some rich text…"
-        spellCheck
-        autoFocus
-        onKeyDown={event => {
-          for (const hotkey in HOTKEYS) {
-            if (isHotkey(hotkey, event as any)) {
-              event.preventDefault()
-              const mark = HOTKEYS[hotkey]
-              toggleMark(editor, mark)
+    <Stack spacing="0">
+      <Slate editor={editor} value={value} onChange={value => setValue(value)}>
+        <Toolbar>
+          <MarkButton format="bold" icon={<MdFormatBold/>}/>
+          <MarkButton format="italic" icon={<MdFormatItalic/>}/>
+          <MarkButton format="underline" icon={<MdFormatUnderlined/>}/>
+          <MarkButton format="code" icon={<MdOutlineCode/>}/>
+          <HeadingSelect/>
+          <BlockButton format="block-quote" icon={<BsBlockquoteLeft/>}/>
+          <BlockButton format="numbered-list" icon={<MdFormatListNumbered/>}/>
+          <BlockButton format="bulleted-list" icon={<MdFormatListBulleted/>}/>
+        </Toolbar>
+        <Editable
+          renderElement={renderElement}
+          renderLeaf={renderLeaf}
+          placeholder="Enter some rich text…"
+          spellCheck
+          autoFocus
+          className="px-3 py-4"
+          onKeyDown={event => {
+            for (const hotkey in HOTKEYS) {
+              if (isHotkey(hotkey, event)) {
+                event.preventDefault()
+                const mark = HOTKEYS[hotkey]
+                toggleMark(editor, mark)
+              }
             }
-          }
-        }}
-      />
-    </Slate>
+          }}
+        />
+      </Slate>
+      <Flex alignItems="center" justifyContent="end" px=".5rem" py=".75rem" borderColor='gray.200' borderTopWidth="1px">
+        <Button colorScheme='blue' size='sm'>Absenden</Button>
+      </Flex>
+    </Stack>
   )
 }
+
+const HeadingSelect = () => {
+  const editor = useSlate()
+
+  const defaultValue = isBlockActive(editor, 'heading-one')
+    ? 'heading-one'
+    : isBlockActive(editor, 'heading-two')
+      ? 'heading-two'
+      : undefined
+
+  return (
+    <Select
+      size='sm'
+      w="12rem"
+      placeholder='Headline format'
+      defaultValue={defaultValue}
+      onChange={(event) => toggleBlock(editor, event.target.value)}>
+      <option value='heading-one'>Headline 1</option>
+      <option value='heading-two'>Headline 2</option>
+    </Select>
+  )
+}
+
 
 const toggleBlock = (editor: Editor, format: any) => {
   const isActive = isBlockActive(editor, format)
@@ -120,9 +160,9 @@ const Element = ({ attributes, children, element }: {attributes: CustomText,  ch
     case 'bulleted-list':
       return <ul {...attributes}>{children}</ul>
     case 'heading-one':
-      return <h1 {...attributes}>{children}</h1>
+      return <Heading as='h1' size='lg' isTruncated {...attributes}>{children}</Heading>
     case 'heading-two':
-      return <h2 {...attributes}>{children}</h2>
+      return <Heading as='h2' size='md'  {...attributes}>{children}</Heading>
     case 'list-item':
       return <li {...attributes}>{children}</li>
     case 'numbered-list':
@@ -152,7 +192,7 @@ const Leaf = ({ attributes, children, leaf }: {attributes: any, children: ReactE
   return <span {...attributes}>{children}</span>
 }
 
-const BlockButton = ({ format, icon }: {format: string, icon: string}) => {
+const BlockButton = ({ format, icon }: {format: string, icon: string|ReactElement}) => {
   const editor = useSlate()
   return (
     <EditorButton
@@ -167,7 +207,7 @@ const BlockButton = ({ format, icon }: {format: string, icon: string}) => {
   )
 }
 
-const MarkButton = ({ format, icon }: {format: string, icon: string}) => {
+const MarkButton = ({ format, icon }: {format: string, icon: string|ReactElement}) => {
   const editor = useSlate()
   return (
     <EditorButton
@@ -186,36 +226,8 @@ const initialValue: Descendant[] = [
   {
     type: 'paragraph',
     children: [
-      { text: 'This is editable ' },
-      { text: 'rich', bold: true },
-      { text: ' text, ' },
-      { text: 'much', italic: true },
-      { text: ' better than a ' },
-      { text: '<textarea>', code: true },
-      { text: '!' },
+      { text: '' },
     ],
-  },
-  {
-    type: 'paragraph',
-    children: [
-      {
-        text:
-          "Since it's rich text, you can do things like turn a selection of text ",
-      },
-      { text: 'bold', bold: true },
-      {
-        text:
-          ', or add a semantically rendered block quote in the middle of the page, like this:',
-      },
-    ],
-  },
-  {
-    type: 'block-quote',
-    children: [{ text: 'A wise quote.' }],
-  },
-  {
-    type: 'paragraph',
-    children: [{ text: 'Try it out for yourself!' }],
   },
 ]
 

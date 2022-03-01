@@ -68,8 +68,8 @@ function DashboardHome() {
         bg={useColorModeValue('white', 'gray.700')}
         boxShadow={'sm'}
         border='1px' borderColor='gray.200'
-        px={3}
-        py={4}>
+        mb="1rem"
+      >
         <PostEditor></PostEditor>
       </Box>
       <Flex
