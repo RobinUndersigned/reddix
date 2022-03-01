@@ -26,7 +26,7 @@ function PostEditor() {
         onBlur={newContent => setContent(newContent)}
       />
       <Flex alignItems="center" justifyContent="end" px=".5rem" py=".75rem" borderColor='gray.200' borderTopWidth="1px">
-        <Button colorScheme='blue' size='sm' onClick={()=>console.log(content)} disabled={content === ''}>Absenden</Button>
+        <Button colorScheme='blue' size='sm' onClick={()=>console.log(content)}>Absenden</Button>
       </Flex>
     </Stack>
   )

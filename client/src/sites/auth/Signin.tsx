@@ -43,9 +43,10 @@ export default function Signin(): ReactElement {
 
         const token: string = result.data.token;
 
-        localStorage.setItem('reddixAuthToken', token)
+        await localStorage.setItem('reddixAuthToken', token)
+        axios.defaults.headers.common['auth-token'] = token;
         const decoded = jwtDecode<AuthContextUser>(token);
-        auth.signin({
+        await auth.signin({
           id: decoded.id,
           firstName: decoded.firstName,
           lastName: decoded.lastName,
