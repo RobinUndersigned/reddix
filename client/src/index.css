@@ -19,3 +19,10 @@ body {
 code {
   font-family: IBMPlexSans, Arial, sans-serif;
 }
+
+.jodit_theme_reddix.jodit-container:not(.jodit_inline) { border: 0; }
+.jodit_theme_reddix .jodit_wysiwyg { background-color: #ffffff; border: 0; }
+.jodit_theme_reddix .jodit-toolbar__box:not(:empty) { width: 100% !important; background-color: white; border-top-left-radius: 0.5rem; border-top-right-radius: 0.5rem; border-bottom-color: #E2E8F0;}
+.jodit_theme_reddix .jodit_toolbar { background: #fcffda; }
+.jodit_theme_reddix .jodit_toolbar svg{ fill: #004607; }
+.jodit_theme_reddix .jodit-container:not(.jodit_inline) .jodit-workplace { border: 0; }
