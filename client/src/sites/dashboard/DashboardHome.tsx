@@ -1,9 +1,10 @@
-import React, {useState} from 'react';
+import React, {TextareaHTMLAttributes, useRef, useState} from 'react';
 import useAsyncEffect from "use-async-effect";
 import axios from "axios";
 import {Box, Button, Container, Flex, Heading, Stack, Text, useColorModeValue} from "@chakra-ui/react";
 import {ArrowDownIcon, ArrowUpIcon} from "@chakra-ui/icons";
 import PostEditor from "../../components/dashboard/PostEditor";
+import JoditEditor from "jodit-react";
 
 type VoteValue = -1 | 0 | 1
 interface Vote {
@@ -61,6 +62,11 @@ function DashboardHome() {
     }))
   }
 
+  const handleEditorSubmit = (content: string) =>  {
+    console.log(content)
+  }
+
+
   return (
     <Container maxW="container.xl">
       <Box
@@ -70,7 +76,7 @@ function DashboardHome() {
         border='1px' borderColor='gray.200'
         mb="1rem"
       >
-        <PostEditor></PostEditor>
+        <PostEditor onSubmit={handleEditorSubmit}/>
       </Box>
       <Flex
         direction={"column"}

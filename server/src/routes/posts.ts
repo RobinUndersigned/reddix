@@ -88,8 +88,9 @@ router.get("/:postId", authHandler, async (req, res) => {
   }
 });
 
-
-router.get("/:postId", authHandler, async (req, res) => {
+// Sanitize HTML
+// https://github.com/apostrophecms/sanitize-html
+router.post("/", authHandler, async (req, res) => {
   const postId= parseInt(req.params.postId, 10)
   if (isNaN(postId)) return res.status(400).send({ error: "User not found" })
 
