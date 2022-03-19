@@ -1,10 +1,10 @@
 import React, {
-  ChangeEvent,
+  ChangeEvent, Ref,
   useState
 } from 'react';
 import axios from "axios";
 import {
-  Box,
+  Box, FormHelperText, FormLabel,
   Input,
   useColorModeValue,
 } from "@chakra-ui/react";
@@ -18,7 +18,7 @@ interface Subreddix {
 }
 
 
-function SubreddixFinder() {
+function SubreddixFinder({...props}, ref: Ref<HTMLInputElement>) {
   const [isOpen, setIsOpen] = useState(false)
   const [selectedSubreddix, setSelectedSubreddix] = useState('')
   const [subreddixList, setSubreddixList] = useState<Subreddix[]>([])
@@ -53,15 +53,17 @@ function SubreddixFinder() {
   }
 
   return (
-      <Box
-        bg={useColorModeValue('white', 'gray.700')}
-        boxShadow={'sm'}
-        mb="1rem"
-        position="relative"
-      >
-        <Input w="100%" onClick={openSubreddixList} onBlur={closeSubreddixList} onChange={handleInputChange} value={selectedSubreddix} placeholder="Select a community"/>
+    <Box mb="1rem">
+      <Box bg={useColorModeValue('white', 'gray.700')} position="relative">
+        <FormLabel htmlFor='postSubreddix'>Subreddix:</FormLabel>
+        <Input {...props} size="md" w="100%" ref={ref} onClick={openSubreddixList} onBlur={closeSubreddixList} onChange={handleInputChange} value={selectedSubreddix} placeholder="Select a community"/>
         {isOpen && <SubreddixList subreddixs={subreddixList} onSelect={onSelectSubreddix} filterValue={filterValue}/>}
+
       </Box>
+      <FormHelperText>
+        In which Subreddix do you want to publish a post?
+      </FormHelperText>
+    </Box>
   );
 }
 
@@ -97,4 +99,4 @@ function SubreddixList({ subreddixs, onSelect, filterValue }: SubreddixListProps
 }
 
 
-export default SubreddixFinder;
+export default React.forwardRef(SubreddixFinder);

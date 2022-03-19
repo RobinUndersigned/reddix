@@ -91,31 +91,25 @@ router.get("/:postId", authHandler, async (req, res) => {
 // Sanitize HTML
 // https://github.com/apostrophecms/sanitize-html
 router.post("/", authHandler, async (req, res) => {
-  const postId= parseInt(req.params.postId, 10)
-  if (isNaN(postId)) return res.status(400).send({ error: "User not found" })
-
   try {
-    const post = await DbClient.post.findUnique({
-      where: {
-        id: postId,
-      },
-      include: {
-        Votes: true,
-      },
-    })
+    const subreddixId = req.body.subreddixId
+      ? () => {
+        return parseInt(req.body.subreddixId, 10)
+      }
+      : async () => {
+        const subreddix = await DbClient.subreddix.findFirst({ where: { url: req.body.url }})
+        return subreddix.id
+      }
 
-    if (!post) return res.status(400).send({ error: "Post not found" })
-    const userVote = post.Votes.find((vote) => vote.userId === req.user.id)
-    return res.send({
-      ...post,
-      userHasVoted: userVote ? true : false,
-      userVote: userVote ? userVote : null,
-      userVoteValue: userVote ? userVote.voteValue : null,
-      votesTotal: post.Votes.reduce((acc: number, obj: Vote) => {
-        return acc + obj.voteValue
-      }, 0)
-    })
+      const newPost = await DbClient.post.create({ data: {
+          title: req.body.title,
+          content: req.body.content,
+          authorId: req.user.id,
+          published: req.body.published,
+          subreddixId: await subreddixId()
+        }})
 
+    return res.send(newPost)
   } catch(err) {
     console.log(err);
     return res.status(err.status || 500).send(err);

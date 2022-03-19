@@ -1,10 +1,9 @@
-import React, {TextareaHTMLAttributes, useCallback, useRef, useState} from 'react';
+import React, {useState} from 'react';
 import useAsyncEffect from "use-async-effect";
 import axios from "axios";
 import {Box, Button, Container, Flex, Heading, Stack, Text, useColorModeValue} from "@chakra-ui/react";
 import {ArrowDownIcon, ArrowUpIcon} from "@chakra-ui/icons";
 import PostEditor from "../../components/dashboard/PostEditor";
-import JoditEditor from "jodit-react";
 
 type VoteValue = -1 | 0 | 1
 interface Vote {
@@ -62,11 +61,16 @@ function DashboardHome() {
     }))
   }
 
-  const handleEditorSubmit = async (postTitle: string, postContent: string, ) =>  {
-    const result = await axios.post("/posts", {
+  const handleEditorSubmit = async (postSubreddix: string, postTitle: string, postContent: string, published: boolean) =>  {
+    const newPost = {
+      subreddixUrl: postSubreddix,
       title: postTitle,
-      content: postContent
-    })
+      content: postContent,
+      published
+    }
+    console.log(newPost)
+    const result = await axios.post("/posts", newPost)
+    console.log(result.data)
   }
 
 

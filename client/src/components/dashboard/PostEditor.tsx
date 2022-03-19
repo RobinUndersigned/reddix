@@ -6,7 +6,6 @@ import {
   FormErrorMessage,
   FormHelperText,
   FormLabel,
-  HStack,
   Input,
   Stack
 } from "@chakra-ui/react";
@@ -14,12 +13,13 @@ import JoditEditor from "jodit-react";
 import SubreddixFinder from "../subreddix/SubreddixFinder";
 
 interface PostEditorProps {
-  onSubmit: (postTitle: string, postContent: string) => void
+  onSubmit: (postSubreddix: string, postTitle: string, postContent: string, published: boolean) => void
 }
 
-function PostEditor({onSubmit}: PostEditorProps) {
+function PostEditor({ onSubmit }: PostEditorProps) {
   const [postContent, setPostContent] = useState('')
   const editor = useRef<JoditEditor>(null)
+  const postSubreddix = useRef<HTMLInputElement>(null)
 
   const [postTitle, setPostTitle] = useState('')
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => setPostTitle(e.target.value)
@@ -36,16 +36,20 @@ function PostEditor({onSubmit}: PostEditorProps) {
     "width": "100%"
   }
 
+  const getSubreddixValue = () => {
+    // Access reference value:
+    return postSubreddix.current ? postSubreddix.current.value : '';
+  }
+
   return (
     <Stack>
-
-      <SubreddixFinder></SubreddixFinder>
-      <FormControl px=".5rem" py=".75rem">
+      <FormControl px="1rem" py=".75rem">
+        <SubreddixFinder ref={postSubreddix}/>
         <FormLabel htmlFor='postTitle'>Post Title</FormLabel>
         <Input
           id="postTitle"
           type="text"
-          size="lg"
+          size="md"
           value={postTitle}
           onChange={handleInputChange}
         />
@@ -64,8 +68,9 @@ function PostEditor({onSubmit}: PostEditorProps) {
         config={config}
         onBlur={newContent => setPostContent(newContent)}
       />
-      <Flex alignItems="center" justifyContent="end" px=".5rem" py=".75rem" borderColor='gray.200' borderTopWidth="1px">
-        <Button colorScheme='blue' size='sm' onClick={()=>onSubmit(postTitle, postContent)}>Absenden</Button>
+      <Flex alignItems="center" justifyContent="end" px="1rem" py=".75rem" gap="1rem" borderColor='gray.200' borderTopWidth="1px">
+        <Button colorScheme='orange' size='sm' onClick={()=>onSubmit(getSubreddixValue(), postTitle, postContent, false)}>Absenden</Button>
+        <Button colorScheme='blue' size='sm' onClick={()=>onSubmit(getSubreddixValue(), postTitle, postContent, true)}>Absenden</Button>
       </Flex>
     </Stack>
   )
