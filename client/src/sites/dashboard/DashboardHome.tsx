@@ -1,4 +1,4 @@
-import React, {TextareaHTMLAttributes, useRef, useState} from 'react';
+import React, {TextareaHTMLAttributes, useCallback, useRef, useState} from 'react';
 import useAsyncEffect from "use-async-effect";
 import axios from "axios";
 import {Box, Button, Container, Flex, Heading, Stack, Text, useColorModeValue} from "@chakra-ui/react";
@@ -62,8 +62,11 @@ function DashboardHome() {
     }))
   }
 
-  const handleEditorSubmit = (content: string) =>  {
-    console.log(content)
+  const handleEditorSubmit = async (postTitle: string, postContent: string, ) =>  {
+    const result = await axios.post("/posts", {
+      title: postTitle,
+      content: postContent
+    })
   }
 
 

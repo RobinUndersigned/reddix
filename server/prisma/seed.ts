@@ -55,7 +55,7 @@ function generateSubreddix()  {
   const seedSubreddix: Prisma.SubreddixCreateInput = {
     name: word,
     description: faker.lorem.sentence(),
-    url: word.toLowerCase(),
+    url: `r/${word.toLowerCase()}`,
   }
   return seedSubreddix;
 }
