@@ -1,9 +1,19 @@
 import React, {useState} from 'react';
 import useAsyncEffect from "use-async-effect";
 import axios from "axios";
-import {Box, Button, Container, Flex, Heading, Stack, Text, useColorModeValue} from "@chakra-ui/react";
-import {ArrowDownIcon, ArrowUpIcon} from "@chakra-ui/icons";
-import PostEditor from "../../components/dashboard/PostEditor";
+import {
+  Avatar,
+  Box,
+  Button,
+  Container,
+  Flex,
+  Heading, HStack, Menu, MenuButton, MenuDivider, MenuItem, MenuList,
+  Stack,
+  Text,
+  useColorModeValue,
+} from "@chakra-ui/react";
+import {AddIcon, ArrowDownIcon, ArrowUpIcon} from "@chakra-ui/icons";
+import {Link} from "react-router-dom";
 
 type VoteValue = -1 | 0 | 1
 interface Vote {
@@ -39,7 +49,6 @@ interface Post {
   onChange: (value: Post) => void
 }
 
-
 function DashboardHome() {
   const [posts, setPosts] = useState<Post[]>([])
 
@@ -54,36 +63,17 @@ function DashboardHome() {
 
   const updatePosts = (updatedPost: Post) => {
     setPosts(posts.map(post => {
-      if (post.id === updatedPost.id) return {
-        ...updatedPost
-      }
+      if (post.id === updatedPost.id) return {...updatedPost}
       return post
     }))
   }
 
-  const handleEditorSubmit = async (postSubreddix: string, postTitle: string, postContent: string, published: boolean) =>  {
-    const newPost = {
-      subreddixUrl: postSubreddix,
-      title: postTitle,
-      content: postContent,
-      published
-    }
-    console.log(newPost)
-    const result = await axios.post("/posts", newPost)
-    console.log(result.data)
-  }
-
-
   return (
     <Container maxW="container.xl">
-      <Box
-        rounded={'lg'}
-        bg={useColorModeValue('white', 'gray.700')}
-        boxShadow={'sm'}
-        border='1px' borderColor='gray.200'
-        mb="1rem"
-      >
-        <PostEditor onSubmit={handleEditorSubmit}/>
+      <Box mb="1rem">
+        <Link to="/dashboard/submit">
+          <Button colorScheme="blue" aria-label='Submit Post' leftIcon={<AddIcon />}>Submit Post</Button>
+        </Link>
       </Box>
       <Flex
         direction={"column"}
@@ -125,9 +115,12 @@ function DashboardPost({id, title, content, Subreddix, userVoteValue, votesTotal
     }
   }
 
-
   const voteCounterProps = {
     color: `${userVoteValue === -1 ? 'orange.500' : userVoteValue === 1 ? 'blue.500' : 'black'}`,
+  }
+
+  const createMarkup = (content: string) => {
+    return { __html: content };
   }
 
   return (
@@ -136,27 +129,51 @@ function DashboardPost({id, title, content, Subreddix, userVoteValue, votesTotal
         bg={useColorModeValue('white', 'gray.700')}
         boxShadow={'sm'}
         border='1px' borderColor='gray.200'
-        px={3}
-        py={4}
+        px={4}
+        py={3}
       >
         <Flex gap="1rem">
           <Stack alignItems="center">
-            <Button onClick={() => handleVoteClick(1)} {...upvoteButtonProps}><ArrowUpIcon w={6} h={6} /></Button>
+            <Button size="sm" onClick={() => handleVoteClick(1)} {...upvoteButtonProps}><ArrowUpIcon w={5} h={5} /></Button>
             <Text {...voteCounterProps} isTruncated>{votesTotal}</Text>
-            <Button onClick={() => handleVoteClick(-1)} {...downvoteButtonProps}><ArrowDownIcon w={6} h={6} /></Button>
+            <Button size="sm" onClick={() => handleVoteClick(-1)} {...downvoteButtonProps}><ArrowDownIcon w={5} h={5} /></Button>
           </Stack>
           <Box>
-            <Stack spacing=".5rem">
+            <Stack spacing=".5rem" mb="2rem">
               <Text fontSize="sm">{`/r/${Subreddix.url}`}</Text>
               <Heading as='h3' size='lg'>{title}</Heading>
-              <Text fontSize="md">{content}</Text>
+              <Text fontSize="md" dangerouslySetInnerHTML={createMarkup(content)} />
             </Stack>
+            <Box>
+              <HStack gap="1rem">
+                <Box>
+                  <Button variant="link" size="sm">
+                    Comments
+                  </Button>
+                </Box>
+                <Box>
+                  <Menu size="sm">
+                    <MenuButton
+                      as={Button}
+                      variant={'link'}
+                      cursor={'pointer'}
+                      minW={0}
+                      size="sm"
+                    >
+                      ...
+                    </MenuButton>
+                    <MenuList>
+                      <MenuItem>Melden</MenuItem>
+                      <MenuItem>Ausblenden</MenuItem>
+                    </MenuList>
+                  </Menu>
+                </Box>
+              </HStack>
+            </Box>
           </Box>
         </Flex>
       </Box>
   )
 }
-
-
 
 export default DashboardHome;

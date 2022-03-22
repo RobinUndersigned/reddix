@@ -20,7 +20,7 @@ export default function DashboardLayout() {
         <Box>
           <HeaderNav />
         </Box>
-        <Box>
+        <Box h="100%">
           <Outlet />
         </Box>
       </Stack>

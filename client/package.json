@@ -35,6 +35,7 @@
     "use-async-effect": "^2.2.5",
     "util": "^0.12.4",
     "web-vitals": "^2.1.4",
+    "yup": "^0.32.11",
     "zustand": "^3.7.0"
   },
   "scripts": {

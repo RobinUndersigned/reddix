@@ -56,7 +56,13 @@ function SubreddixFinder({...props}, ref: Ref<HTMLInputElement>) {
     <Box mb="1rem">
       <Box bg={useColorModeValue('white', 'gray.700')} position="relative">
         <FormLabel htmlFor='postSubreddix'>Subreddix:</FormLabel>
-        <Input {...props} size="md" w="100%" ref={ref} onClick={openSubreddixList} onBlur={closeSubreddixList} onChange={handleInputChange} value={selectedSubreddix} placeholder="Select a community"/>
+        <Input {...props} size="md" w="100%" ref={ref}
+               onSelect={openSubreddixList}
+               onClick={openSubreddixList}
+               onBlur={closeSubreddixList}
+               onChange={handleInputChange}
+               value={selectedSubreddix}
+               placeholder="Select a community"/>
         {isOpen && <SubreddixList subreddixs={subreddixList} onSelect={onSelectSubreddix} filterValue={filterValue}/>}
 
       </Box>

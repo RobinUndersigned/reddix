@@ -6,6 +6,7 @@ import Signin from "../sites/auth/Signin";
 import DashboardLayout from "../layouts/DashboardLayout";
 import {AuthProvider, RequireAuth} from "../components/provider/AuthProvider";
 import DashboardHome from "../sites/dashboard/DashboardHome";
+import DashboardSubmitPost from "../sites/dashboard/DashboardSubmitPost";
 
 function PublicRoutes(): ReactElement {
 
@@ -18,6 +19,7 @@ function PublicRoutes(): ReactElement {
             </RequireAuth>
           }>
             <Route index element={<DashboardHome/>} />
+            <Route path="/dashboard/submit" element={<DashboardSubmitPost/>} />
             <Route path="*" element={<NoMatch />} />
           </Route>
         <Route path="/auth" element={<AuthLayout />}>

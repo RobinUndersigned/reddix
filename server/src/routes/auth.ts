@@ -12,7 +12,6 @@ const router = express.Router();
 router.post('/signup', async (req, res) => {
   try {
     assert(req.body, SignupValidation)
-    console.log(req);
     const existingEmail = await Db.user.findUnique({ where: { email: req.body.email } })
     if (existingEmail) return res.status(400).send({ error: "Email already taken" })
 
