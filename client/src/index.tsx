@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import {BrowserRouter} from "react-router-dom";
 import {ChakraProvider} from "@chakra-ui/react";
 import axios from "axios";
+import {theme} from "./utils/themeConfig";
 
 axios.defaults.baseURL = 'http://localhost:5000';
 const token = localStorage.getItem("reddixAuthToken");
@@ -26,9 +27,11 @@ axios.interceptors.response.use(response => {
   return Promise.reject(error);
 });
 
+
+
 ReactDOM.render(
   <React.StrictMode>
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
       <BrowserRouter>
         <App />
       </BrowserRouter>

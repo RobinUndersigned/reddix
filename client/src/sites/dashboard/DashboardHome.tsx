@@ -2,18 +2,18 @@ import React, {useState} from 'react';
 import useAsyncEffect from "use-async-effect";
 import axios from "axios";
 import {
-  Avatar,
   Box,
   Button,
   Container,
   Flex,
   Heading, HStack, Menu, MenuButton, MenuDivider, MenuItem, MenuList,
   Stack,
-  Text,
+  Text, useColorMode,
   useColorModeValue,
 } from "@chakra-ui/react";
 import {AddIcon, ArrowDownIcon, ArrowUpIcon} from "@chakra-ui/icons";
 import {Link} from "react-router-dom";
+import {mode} from "@chakra-ui/theme-tools";
 
 type VoteValue = -1 | 0 | 1
 interface Vote {
@@ -129,18 +129,16 @@ function DashboardPost({id, title, content, Subreddix, userVoteValue, votesTotal
         bg={useColorModeValue('white', 'gray.700')}
         boxShadow={'sm'}
         border='1px' borderColor='gray.200'
-        px={4}
-        py={3}
       >
-        <Flex gap="1rem">
-          <Stack alignItems="center">
+        <Flex gap=".5rem">
+          <Stack alignItems="center" bg={useColorModeValue('gray.50', 'gray.800')} roundedLeft={'lg'} px={2} py={2}>
             <Button size="sm" onClick={() => handleVoteClick(1)} {...upvoteButtonProps}><ArrowUpIcon w={5} h={5} /></Button>
             <Text {...voteCounterProps} isTruncated>{votesTotal}</Text>
             <Button size="sm" onClick={() => handleVoteClick(-1)} {...downvoteButtonProps}><ArrowDownIcon w={5} h={5} /></Button>
           </Stack>
-          <Box>
+          <Box px={3} py={2}>
             <Stack spacing=".5rem" mb="2rem">
-              <Text fontSize="sm">{`/r/${Subreddix.url}`}</Text>
+              <Text fontSize="xs">{`/r/${Subreddix.url}`}</Text>
               <Heading as='h3' size='lg'>{title}</Heading>
               <Text fontSize="md" dangerouslySetInnerHTML={createMarkup(content)} />
             </Stack>

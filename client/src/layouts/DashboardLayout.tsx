@@ -1,7 +1,7 @@
 import React from "react";
 import {
   Box,
-  Stack, useColorModeValue
+  Stack
 } from '@chakra-ui/react';
 import HeaderNav from "../components/HeaderNav";
 import {Outlet} from "react-router-dom";
@@ -15,7 +15,7 @@ export default function DashboardLayout() {
   }
 
   return (
-    <Box h={"100%"} bg={useColorModeValue('gray.50', 'gray.800')}>
+    <Box h={"100%"}>
       <Stack h={"100%"}>
         <Box>
           <HeaderNav />
