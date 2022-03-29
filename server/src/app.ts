@@ -9,7 +9,7 @@ import authRouter from "./routes/auth"
 import subreddixRouter from "./routes/subreddix";
 import postsRouter from "./routes/posts";
 import mediaRouter from "./routes/media";
-import votesRouter from "./routes/votes";
+import votesRouter from "./routes/postVotes";
 import errorHandler from "./middleware/errorHandler"
 import cors from "cors"
 import dotenv from "dotenv"
@@ -48,7 +48,7 @@ app.use('/auth', authRouter);
 app.use('/r', subreddixRouter);
 app.use('/posts', postsRouter);
 app.use('/media', mediaRouter);
-app.use('/votes', votesRouter);
+app.use('/post-votes', votesRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

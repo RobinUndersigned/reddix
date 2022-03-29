@@ -22,7 +22,13 @@ router.get('/', authHandler, async (req, res) => {
       },
       include: {
         Subreddix: true,
-        Votes: true
+        Votes: true,
+        Comments: {
+          include: {
+            Children: true,
+            Parent: true
+          }
+        }
       },
       orderBy: {
         createdAt: 'desc',
@@ -40,10 +46,13 @@ router.get('/', authHandler, async (req, res) => {
       authorId: post.authorId,
       subreddixId: post.subreddixId,
       Subreddix: post.Subreddix,
+      hasComments: post.Comments.length > 0,
+      commentCount: post.Comments.length,
+      Comments: post.Comments.filter(comment => comment.parentId === null),
       userHasVoted: userVote ? true : false,
       userVote: userVote ? userVote : null,
       userVoteValue: userVote ? userVote.voteValue : null,
-      votesTotal: post.Votes.reduce((acc: number, obj: Vote) => {
+      votesTotal: post.Votes && post.Votes.reduce((acc: number, obj: Vote) => {
         return acc + obj.voteValue
       }, 0)
     }})
@@ -68,6 +77,12 @@ router.get("/:postId", authHandler, async (req, res) => {
       include: {
         Subreddix: true,
         Votes: true,
+        Comments: {
+          include: {
+            Children: true,
+            Parent: true
+          }
+        }
       },
     })
 
@@ -82,6 +97,9 @@ router.get("/:postId", authHandler, async (req, res) => {
       authorId: post.authorId,
       subreddixId: post.subreddixId,
       Subreddix: post.Subreddix,
+      hasComments: post.Comments.length > 0,
+      commentCount: post.Comments.length,
+      Comments: post.Comments.filter(comment => comment.parentId === null),
       userHasVoted: userVote ? true : false,
       userVote: userVote ? userVote : null,
       userVoteValue: userVote ? userVote.voteValue : null,

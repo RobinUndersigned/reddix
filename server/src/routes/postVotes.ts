@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get('/', authHandler, async (req, res) => {
   try {
-    const votes = await DbClient.vote.findMany({})
+    const votes = await DbClient.postVote.findMany({})
     res.send(votes);
   } catch(err) {
     console.log(err);
@@ -25,7 +25,7 @@ router.post('/', authHandler, async (req, res) => {
   try {
     assert(req.body, VoteValidation)
 
-    const upsertVote = await Db.vote.upsert({
+    const upsertVote = await Db.postVote.upsert({
       where: {
         userId_postId: {
           userId: req.user.id,
@@ -58,7 +58,7 @@ router.get("/:voteId", authHandler, async (req, res) => {
   if (isNaN(voteId)) return res.status(400).send({ error: "User not found" })
 
   try {
-    const vote = await DbClient.vote.findUnique({
+    const vote = await DbClient.postVote.findUnique({
       where: {
         id: voteId,
       },

@@ -14,40 +14,8 @@ import {
 import {AddIcon, ArrowDownIcon, ArrowUpIcon} from "@chakra-ui/icons";
 import {Link} from "react-router-dom";
 import {mode} from "@chakra-ui/theme-tools";
+import {Post} from "../../interfaces/Post";
 
-type VoteValue = -1 | 0 | 1
-interface Vote {
-  id: number,
-  userId: number,
-  postId: number,
-  createdAt: string,
-  voteValue: VoteValue
-}
-
-interface Post {
-  id: number,
-  title: string,
-  createdAt: string,
-  content: string,
-  published: true,
-  authorId: number,
-  subreddixId: number,
-  Subreddix: {
-    id: number,
-    name: string,
-    url: string,
-    description: string,
-    createdAt: string
-  }
-  Votes: Vote[]
-
-  userHasVoted: boolean,
-  userVoteValue?: number,
-  userVote?: Vote,
-  votesTotal: number,
-
-  onChange: (value: Post) => void
-}
 
 function DashboardHome() {
   const [posts, setPosts] = useState<Post[]>([])
@@ -69,7 +37,7 @@ function DashboardHome() {
   }
 
   return (
-    <Container maxW="container.xl">
+    <>
       <Box mb="1rem">
         <Link to="/dashboard/submit">
           <Button colorScheme="blue" aria-label='Submit Post' leftIcon={<AddIcon />}>Submit Post</Button>
@@ -83,14 +51,14 @@ function DashboardHome() {
           return <DashboardPost key={post.id} {...post} onChange={updatePosts}/>
         })}
       </Flex>
-    </Container>
+    </>
   );
 }
 
-function DashboardPost({id, title, content, Subreddix, userVoteValue, votesTotal, onChange}: Post) {
+function DashboardPost({id, title, content, Subreddix, userVoteValue, votesTotal, onChange, Comments, commentCount, hasComments}: Post) {
   const handleVoteClick = async (value: number) => {
     if (userVoteValue  === value) value = 0
-    await axios.post("/votes", {
+    await axios.post("/post-votes", {
       voteValue: value,
       postId: id
     })
@@ -123,6 +91,11 @@ function DashboardPost({id, title, content, Subreddix, userVoteValue, votesTotal
     return { __html: content };
   }
 
+  const commentsButtonLabel = () => {
+    if (hasComments && commentCount === 1) return `${commentCount} Comment`
+    return `${commentCount} Comments`
+  }
+
   return (
       <Box
         rounded={'lg'}
@@ -146,7 +119,7 @@ function DashboardPost({id, title, content, Subreddix, userVoteValue, votesTotal
               <HStack gap="1rem">
                 <Box>
                   <Button variant="link" size="sm">
-                    Comments
+                    {commentsButtonLabel()}
                   </Button>
                 </Box>
                 <Box>

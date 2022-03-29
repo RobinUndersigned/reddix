@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Box,
+  Box, Container,
   Stack
 } from '@chakra-ui/react';
 import HeaderNav from "../components/HeaderNav";
@@ -21,7 +21,9 @@ export default function DashboardLayout() {
           <HeaderNav />
         </Box>
         <Box h="100%">
-          <Outlet />
+          <Container maxW="container.xl">
+            <Outlet />
+          </Container>
         </Box>
       </Stack>
     </Box>

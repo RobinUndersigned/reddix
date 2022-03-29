@@ -7,7 +7,6 @@ function authHandler(req: Request, res: Response, next: NextFunction)  {
 
   try {
     const verified = jwt.verify(token, process.env.AUTH_SECRET)
-    console.log(verified)
     req.user = verified as Express.User
     next()
   } catch (err) {
