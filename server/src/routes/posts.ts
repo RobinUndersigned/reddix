@@ -79,7 +79,33 @@ router.get("/:postId", authHandler, async (req, res) => {
         Votes: true,
         Comments: {
           include: {
-            Children: true,
+            User: {
+              select: {
+                userName: true,
+                id: true,
+                Profile: {
+                  select: {
+                    avatarId: true
+                  }
+                }
+              },
+            },
+            Children: {
+              include: {
+                Children: true,
+                User: {
+                  select: {
+                    userName: true,
+                    id: true,
+                    Profile: {
+                      select: {
+                        avatarId: true
+                      }
+                    }
+                  },
+                },
+              }
+            },
             Parent: true
           }
         }
@@ -107,7 +133,6 @@ router.get("/:postId", authHandler, async (req, res) => {
         return acc + obj.voteValue
       }, 0)
     })
-
   } catch(err) {
     return res.status(err.status || 500).send(err);
   }
