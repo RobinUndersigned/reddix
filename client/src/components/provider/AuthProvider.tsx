@@ -1,10 +1,11 @@
 import React from "react";
-import {AuthContextType, AuthContextUser} from "../../context/AuthContext";
+import {AuthContextType} from "../../context/AuthContext";
 import {authProvider} from "../../utils/authProvider";
 import useAuth from "../../hooks/useAuth";
 import {Navigate, useLocation} from "react-router-dom";
 import jwtDecode from "jwt-decode";
 import {AuthContext} from "../../context/AuthContext";
+import {AuthContextUser} from "../../interfaces/AuthContextUser";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const encryptedToken = localStorage.getItem('reddixAuthToken')

@@ -1,5 +1,6 @@
 import axios from "axios";
 import {
+  Avatar,
   Box,
   Button,
   Flex,
@@ -13,8 +14,9 @@ import {
   useColorModeValue
 } from "@chakra-ui/react";
 import {ArrowDownIcon, ArrowUpIcon} from "@chakra-ui/icons";
-import React, {useCallback, useState} from "react";
+import React, {useState} from "react";
 import {Post} from "../../interfaces/Post";
+import {Comment} from "../../interfaces/Comment";
 import {useParams} from "react-router-dom";
 import useAsyncEffect from "use-async-effect";
 
@@ -120,9 +122,45 @@ function SinglePost() {
           </Box>
         </Box>
       </Flex>
-      <Box bg={useColorModeValue('gray.50', 'gray.800')}>
-        {singlePost && singlePost.Comments.map((comment, index) => { return <Box key={index}>{comment.content}</Box>})}
+      <Box bg={useColorModeValue('gray.50', 'gray.800')} p="1rem">
+        {singlePost && singlePost.Comments.map((comment, index) => { return <PostComment key={index} {...comment} /> })}
       </Box>
+    </Box>
+  )
+}
+
+
+function PostComment({content, Children, User }: Comment) {
+  const [avatarImage, setAvatarImage] = useState<string>("https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9")
+  const [isOpen, setIsOpen] = useState<boolean>(true)
+
+  useAsyncEffect(async () => {
+    if (User.Profile.avatarId) {
+      const avatar = await axios.get(`/media/${User.Profile.avatarId}`);
+      if (avatar.data.file) setAvatarImage(avatar.data.file)
+    }
+  }, [User])
+
+  const createMarkup = (content: string) => {
+    return { __html: content };
+  }
+
+  return (
+    <Box mb="2rem">
+      <Flex gap=".5rem">
+        <Flex direction="column" alignItems="center" gap=".5rem">
+          <Avatar
+            size={'sm'}
+            src={avatarImage}
+          />
+          <i onClick={() => setIsOpen(!isOpen)} className="h-full w-[3px] bg-gray-300 hover:bg-sky-400 hover:cursor-pointer"/>
+        </Flex>
+        <Stack>
+          <Text fontSize="md" dangerouslySetInnerHTML={createMarkup(content)} />
+          <Box>Comment Options</Box>
+          {isOpen && Children && Children.map((child: Comment, index: number) =>  { return <PostComment key={index} {...child} /> })}
+        </Stack>
+      </Flex>
     </Box>
   )
 }

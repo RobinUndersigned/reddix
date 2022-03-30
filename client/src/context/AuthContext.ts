@@ -1,19 +1,5 @@
 import React from "react";
-
-export interface AuthContextUserProfile {
-  id: number,
-  bio: string,
-  avatarId: number,
-}
-
-export interface AuthContextUser  {
-  id: number,
-  firstName: string,
-  lastName: string,
-  userName: string,
-  email: string;
-  Profile: AuthContextUserProfile
-}
+import {AuthContextUser} from "../interfaces/AuthContextUser";
 
 export interface AuthContextType {
   user?: AuthContextUser | null;

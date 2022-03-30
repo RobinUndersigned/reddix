@@ -1,3 +1,5 @@
+import {AuthContextUser} from "./AuthContextUser";
+
 export interface Comment {
   id: string,
   content: string,
@@ -6,4 +8,5 @@ export interface Comment {
   parentId: number,
   Children: Comment[],
   createdAt: string,
+  User: AuthContextUser
 }

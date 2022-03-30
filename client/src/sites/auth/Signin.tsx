@@ -15,8 +15,8 @@ import {
 } from '@chakra-ui/react';
 import useAuth from "../../hooks/useAuth";
 import jwtDecode from "jwt-decode";
-import {AuthContextUser} from "../../context/AuthContext";
 import {useNavigate} from "react-router-dom";
+import {AuthContextUser} from "../../interfaces/AuthContextUser";
 
 export default function Signin(): ReactElement {
   const toast = useToast()

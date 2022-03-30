@@ -4,16 +4,14 @@ import axios from "axios";
 import {
   Box,
   Button,
-  Container,
   Flex,
-  Heading, HStack, Menu, MenuButton, MenuDivider, MenuItem, MenuList,
+  Heading, HStack, Menu, MenuButton, MenuItem, MenuList,
   Stack,
-  Text, useColorMode,
+  Text,
   useColorModeValue,
 } from "@chakra-ui/react";
 import {AddIcon, ArrowDownIcon, ArrowUpIcon} from "@chakra-ui/icons";
 import {Link} from "react-router-dom";
-import {mode} from "@chakra-ui/theme-tools";
 import {Post} from "../../interfaces/Post";
 
 
@@ -55,7 +53,7 @@ function DashboardHome() {
   );
 }
 
-function DashboardPost({id, title, content, Subreddix, userVoteValue, votesTotal, onChange, Comments, commentCount, hasComments}: Post) {
+function DashboardPost({id, title, content, Subreddix, userVoteValue, votesTotal, onChange, commentCount, hasComments}: Post) {
   const handleVoteClick = async (value: number) => {
     if (userVoteValue  === value) value = 0
     await axios.post("/post-votes", {
