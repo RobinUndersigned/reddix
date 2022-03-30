@@ -167,7 +167,7 @@ function PostComment({content, Children, User }: Comment) {
           />
           <i onClick={() => setShowChildren(!showChildren)} className="h-full w-[3px] bg-gray-300 hover:bg-sky-400 hover:cursor-pointer"/>
         </Flex>
-        <Stack>
+        <Stack flexGrow={1}>
           <Text fontSize="md" dangerouslySetInnerHTML={createMarkup(content)} />
           <HStack gap="1rem">
             <Box>
@@ -198,13 +198,13 @@ function PostComment({content, Children, User }: Comment) {
                 <Box className="w-8 h-full flex flex-col items-center">
                     <i onClick={() => setShowEditor(!showEditor)} className="d-block h-full w-[3px] bg-gray-300 hover:bg-sky-400 hover:cursor-pointer"/>
                 </Box>
-                  <Stack>
-                    <Box border='1px' borderColor='gray.200' borderRadius="md">{Editor}</Box>
-                    <Flex alignItems="center" justifyContent="end" gap=".25rem">
-                      <Button variant="outline" colorScheme='orange' size='xs'>Save as draft</Button>
-                      <Button colorScheme='blue' size='xs' >Submit</Button>
-                    </Flex>
-                  </Stack>
+                <Stack flexGrow={1}>
+                  <Box border='1px' borderColor='gray.200' borderRadius="md">{Editor}</Box>
+                  <Flex alignItems="center" justifyContent="end" gap=".25rem">
+                    <Button variant="outline" colorScheme='orange' size='xs' onClick={() => setShowEditor(!showEditor)}>Abort</Button>
+                    <Button colorScheme='blue' size='xs'>Submit</Button>
+                  </Flex>
+                </Stack>
               </Flex>
           }
           {showChildren && Children.map((child: Comment, index: number) =>  { return <PostComment key={index} {...child} /> })}
