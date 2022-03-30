@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 import JoditEditor from "jodit-react";
 import SubreddixFinder from "../subreddix/SubreddixFinder";
+import {editorConfig} from "../../utils/editorConfig";
 
 type EditorVariant = "text" | "link"
 
@@ -29,17 +30,6 @@ function PostEditor({ variant, onSubmit }: PostEditorProps) {
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => setPostTitle(e.target.value)
   const isError = postTitle === ''
 
-  const config = {
-    "toolbarAdaptive": false,
-    "showCharsCounter": false,
-    "showWordsCounter": false,
-    "showXPathInStatusbar": false,
-    "buttons": "bold,italic,underline,ul,ol,link,undo,redo",
-    "theme": "reddix",
-    "disablePlugins": "search",
-    "width": "100%"
-  }
-
   const getSubreddixValue = () => {
     // Access reference value:
     return postSubreddix.current ? postSubreddix.current.value : '';
@@ -51,7 +41,7 @@ function PostEditor({ variant, onSubmit }: PostEditorProps) {
         <JoditEditor
         ref={editor}
         value={postContent}
-        config={config}
+        config={editorConfig}
         onBlur={newContent => setPostContent(newContent)}/>
       </Box>
     )

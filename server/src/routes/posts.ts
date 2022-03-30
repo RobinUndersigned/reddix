@@ -2,6 +2,7 @@ import express from "express"
 import DbClient from "../db/PrismaClient"
 import authHandler from "../middleware/authHandler";
 import {assert, boolean, number, object,  size, string} from "superstruct";
+import createCommentTree from "../utils/createCommentTree";
 
 
 const router = express.Router();
@@ -64,7 +65,6 @@ router.get('/', authHandler, async (req, res) => {
   }
 });
 
-
 router.get("/:postId", authHandler, async (req, res) => {
   const postId= parseInt(req.params.postId, 10)
   if (isNaN(postId)) return res.status(400).send({ error: "User not found" })
@@ -77,42 +77,35 @@ router.get("/:postId", authHandler, async (req, res) => {
       include: {
         Subreddix: true,
         Votes: true,
-        Comments: {
-          include: {
-            User: {
-              select: {
-                userName: true,
-                id: true,
-                Profile: {
-                  select: {
-                    avatarId: true
-                  }
-                }
-              },
-            },
-            Children: {
-              include: {
-                Children: true,
-                User: {
-                  select: {
-                    userName: true,
-                    id: true,
-                    Profile: {
-                      select: {
-                        avatarId: true
-                      }
-                    }
-                  },
-                },
-              }
-            },
-            Parent: true
+        _count: {
+          select: {
+            Comments: true
           }
         }
       },
     })
 
     if (!post) return res.status(400).send({ error: "Post not found" })
+
+    const flatComments = await DbClient.comment.findMany({
+      where: {
+        postId: post.id
+      },
+      include: {
+        User: {
+          select: {
+            userName: true,
+            id: true,
+            Profile: {
+              select: {
+                avatarId: true
+              }
+            }
+          },
+        },
+      }
+    })
+
     const userVote = post.Votes.find((vote) => vote.userId === req.user.id)
     return res.send({
       id: post.id,
@@ -123,9 +116,9 @@ router.get("/:postId", authHandler, async (req, res) => {
       authorId: post.authorId,
       subreddixId: post.subreddixId,
       Subreddix: post.Subreddix,
-      hasComments: post.Comments.length > 0,
-      commentCount: post.Comments.length,
-      Comments: post.Comments.filter(comment => comment.parentId === null),
+      hasComments: post._count.Comments > 0,
+      commentCount: post._count.Comments,
+      Comments: createCommentTree(flatComments),
       userHasVoted: userVote ? true : false,
       userVote: userVote ? userVote : null,
       userVoteValue: userVote ? userVote.voteValue : null,
@@ -140,7 +133,6 @@ router.get("/:postId", authHandler, async (req, res) => {
 
 // Sanitize HTML
 // https://github.com/apostrophecms/sanitize-html
-
 const PostValidation = object({
   title: size(string(), 1, 500),
   content: string(),
@@ -203,12 +195,8 @@ router.post("/", authHandler, async (req, res) => {
         return acc + obj.voteValue
       }, 0)
     })
-
   } catch(err) {
-    console.log(err);
     const { key, value, type } = err
-
-    console.log({key, value, type})
     if (value === undefined) {
       return res.status(400).send({ error: `${key} required` })
     } else if (type === 'never') {
@@ -220,8 +208,5 @@ router.post("/", authHandler, async (req, res) => {
     return res.status(err.status || 500).send(err);
   }
 });
-
-
-
 
 export default router;

@@ -14,11 +14,13 @@ import {
   useColorModeValue
 } from "@chakra-ui/react";
 import {ArrowDownIcon, ArrowUpIcon} from "@chakra-ui/icons";
-import React, {useState} from "react";
+import React, {useRef, useState} from "react";
 import {Post} from "../../interfaces/Post";
 import {Comment} from "../../interfaces/Comment";
 import {useParams} from "react-router-dom";
 import useAsyncEffect from "use-async-effect";
+import {editorConfig} from "../../utils/editorConfig";
+import JoditEditor from "jodit-react";
 
 function SinglePost() {
   const {postId} = useParams();
@@ -113,8 +115,8 @@ function SinglePost() {
                     ...
                   </MenuButton>
                   <MenuList>
-                    <MenuItem>Melden</MenuItem>
-                    <MenuItem>Ausblenden</MenuItem>
+                    <MenuItem>Report</MenuItem>
+                    <MenuItem>Hide</MenuItem>
                   </MenuList>
                 </Menu>
               </Box>
@@ -123,7 +125,7 @@ function SinglePost() {
         </Box>
       </Flex>
       <Box bg={useColorModeValue('gray.50', 'gray.800')} p="1rem">
-        {singlePost && singlePost.Comments.map((comment, index) => { return <PostComment key={index} {...comment} /> })}
+        {singlePost?.Comments.map((comment, index) => { return <PostComment key={index} {...comment} /> })}
       </Box>
     </Box>
   )
@@ -132,7 +134,17 @@ function SinglePost() {
 
 function PostComment({content, Children, User }: Comment) {
   const [avatarImage, setAvatarImage] = useState<string>("https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9")
-  const [isOpen, setIsOpen] = useState<boolean>(true)
+  const [showChildren, setShowChildren] = useState<boolean>(true)
+  const [showEditor, setShowEditor] = useState<boolean>(false)
+  const [commentContent, setCommentContent] = useState('')
+  const editor = useRef<JoditEditor>(null)
+
+  const Editor = <JoditEditor
+    ref={editor}
+    value={commentContent}
+    config={editorConfig}
+    onBlur={newContent => setCommentContent(newContent)}/>
+
 
   useAsyncEffect(async () => {
     if (User.Profile.avatarId) {
@@ -147,22 +159,61 @@ function PostComment({content, Children, User }: Comment) {
 
   return (
     <Box mb="2rem">
-      <Flex gap=".5rem">
+      <Flex gap=".5rem" w="100%">
         <Flex direction="column" alignItems="center" gap=".5rem">
           <Avatar
             size={'sm'}
             src={avatarImage}
           />
-          <i onClick={() => setIsOpen(!isOpen)} className="h-full w-[3px] bg-gray-300 hover:bg-sky-400 hover:cursor-pointer"/>
+          <i onClick={() => setShowChildren(!showChildren)} className="h-full w-[3px] bg-gray-300 hover:bg-sky-400 hover:cursor-pointer"/>
         </Flex>
         <Stack>
           <Text fontSize="md" dangerouslySetInnerHTML={createMarkup(content)} />
-          <Box>Comment Options</Box>
-          {isOpen && Children && Children.map((child: Comment, index: number) =>  { return <PostComment key={index} {...child} /> })}
+          <HStack gap="1rem">
+            <Box>
+              <Button variant="link" size="sm" onClick={() => setShowEditor(!showEditor)}>
+                Antworten
+              </Button>
+            </Box>
+            <Box>
+              <Menu size="sm">
+                <MenuButton
+                  as={Button}
+                  variant={'link'}
+                  cursor={'pointer'}
+                  minW={0}
+                  size="sm"
+                >
+                  ...
+                </MenuButton>
+                <MenuList>
+                  <MenuItem>Report</MenuItem>
+                  <MenuItem>Hide</MenuItem>
+                </MenuList>
+              </Menu>
+            </Box>
+          </HStack>
+          {showEditor &&
+              <Flex gap=".5rem">
+                <Box className="w-8 h-full flex flex-col items-center">
+                    <i onClick={() => setShowEditor(!showEditor)} className="d-block h-full w-[3px] bg-gray-300 hover:bg-sky-400 hover:cursor-pointer"/>
+                </Box>
+                  <Stack>
+                    <Box border='1px' borderColor='gray.200' borderRadius="md">{Editor}</Box>
+                    <Flex alignItems="center" justifyContent="end" gap=".25rem">
+                      <Button variant="outline" colorScheme='orange' size='xs'>Save as draft</Button>
+                      <Button colorScheme='blue' size='xs' >Submit</Button>
+                    </Flex>
+                  </Stack>
+              </Flex>
+          }
+          {showChildren && Children.map((child: Comment, index: number) =>  { return <PostComment key={index} {...child} /> })}
         </Stack>
       </Flex>
     </Box>
   )
 }
+
+
 
 export default SinglePost;
