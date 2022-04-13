@@ -50,17 +50,30 @@ async function generateUser()  {
 /**
  * Generate Subreddix
  */
-function generateSubreddix()  {
+async function generateSubreddix()  {
   const word = faker.lorem.word()
+  const seedUser = await generateUser()
   const seedSubreddix: Prisma.SubreddixCreateInput = {
     name: word,
     description: faker.lorem.sentence(),
     url: `r/${word.toLowerCase()}`,
+    Subscribers: {
+      create: [
+        {
+          subscribedAt: new Date(),
+          User: {
+            create: {
+              ... seedUser
+            }
+          }
+        }
+      ]
+    },
   }
   return seedSubreddix;
 }
 
-function generatePost(seedUser: Prisma.UserCreateInput, seedSubreddix: Prisma.SubreddixCreateInput) {
+async function generatePost(seedUser: Prisma.UserCreateInput, seedSubreddix: Prisma.SubreddixCreateInput) {
   const seedPost: Prisma.PostCreateInput = {
     title: faker.lorem.sentence(),
     content: faker.lorem.paragraphs(),
@@ -80,7 +93,7 @@ async function main() {
   const posts = await Promise.all(
     generateRange(10).map(async (v) => {
       const user = await generateUser()
-      const subreddix = generateSubreddix()
+      const subreddix = await generateSubreddix()
       const post = await generatePost(user, subreddix)
       return post;
     })

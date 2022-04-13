@@ -1,13 +1,16 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import axios from "axios";
 import {
   Box,
-  Container,Tab, TabList, TabPanel, TabPanels,
+  Container, Flex, Tab, TabList, TabPanel, TabPanels,
   Tabs,
   useColorModeValue,
   useToast
 } from "@chakra-ui/react";
 import PostEditor from "../../components/dashboard/PostEditor";
+import {PostEditorContext} from "../../context/PostEditorContext";
+import SubreddixCard from "../../components/subreddix/SubreddixCard";
+
 
 type VoteValue = -1 | 0 | 1
 interface Vote {
@@ -46,6 +49,8 @@ interface Post {
 
 function DashboardSubmitPost() {
   const toast = useToast()
+  const {selectedSubreddix} = useContext(PostEditorContext);
+  console.log(selectedSubreddix)
   const handleEditorSubmit = async (postSubreddix: string, postTitle: string, postContent: string, published: boolean) =>  {
     try {
       const newPost = {
@@ -79,30 +84,34 @@ function DashboardSubmitPost() {
 
   return (
     <Container maxW="container.xl">
-      <Box
-        rounded={'lg'}
-        bg={useColorModeValue('white', 'gray.700')}
-        boxShadow={'sm'}
-        border='1px' borderColor='gray.200'
-        mb="1rem"
-      >
-        <Tabs>
-          <TabList>
-            <Tab>Text</Tab>
-            <Tab>Link</Tab>
-          </TabList>
+      <Flex gap={4} alignItems={"flex-start"}>
+        <Box
+          flexBasis={selectedSubreddix ? "75%" : "100%"}
+          rounded={'lg'}
+          bg={useColorModeValue('white', 'gray.700')}
+          boxShadow={'sm'}
+          border='1px' borderColor='gray.200'
+          mb="1rem"
+        >
+          <Tabs>
+            <TabList>
+              <Tab>Text</Tab>
+              <Tab>Link</Tab>
+            </TabList>
 
-          <TabPanels>
-            <TabPanel p="0">
-              <PostEditor variant="text" onSubmit={handleEditorSubmit}/>
-            </TabPanel>
-            <TabPanel p="0">
-              <PostEditor variant="link" onSubmit={handleEditorSubmit}/>
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
+            <TabPanels>
+              <TabPanel p="0">
+                <PostEditor variant="text" onSubmit={handleEditorSubmit}/>
+              </TabPanel>
+              <TabPanel p="0">
+                <PostEditor variant="link" onSubmit={handleEditorSubmit}/>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
 
-      </Box>
+        </Box>
+        {selectedSubreddix && <SubreddixCard {...selectedSubreddix}/>}
+      </Flex>
     </Container>
   );
 }

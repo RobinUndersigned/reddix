@@ -1,5 +1,5 @@
 import React, {
-  ChangeEvent, Ref,
+  ChangeEvent, Ref, useCallback, useContext, useEffect,
   useState
 } from 'react';
 import axios from "axios";
@@ -8,48 +8,40 @@ import {
   Input,
   useColorModeValue,
 } from "@chakra-ui/react";
+import useAsyncEffect from "use-async-effect";
+import {Subreddix} from "../../interfaces/Subreddix";
+import {PostEditorContext} from "../../context/PostEditorContext";
 
-interface Subreddix {
-  id: number,
-  name: string,
-  url: string,
-  description: string,
-  createdAt: string
+interface SubreddixFinderProps {
+   onChange: (subreddix: Partial<Subreddix>) => void
 }
 
-
-function SubreddixFinder({...props}, ref: Ref<HTMLInputElement>) {
+function SubreddixFinder({...props}: SubreddixFinderProps, ref: Ref<HTMLInputElement>) {
   const [isOpen, setIsOpen] = useState(false)
-  const [selectedSubreddix, setSelectedSubreddix] = useState('')
-  const [subreddixList, setSubreddixList] = useState<Subreddix[]>([])
+  const [selectedSubreddixUrl, setSelectedSubreddixUrl] = useState('')
   const [filterValue, setFilterValue] = useState('')
 
-  const getSubreddixList = async () => {
-    const result = await axios.get("/r");
-    setSubreddixList(result.data)
-  }
+  const {setSelectedSubreddix} = useContext(PostEditorContext);
 
   const openSubreddixList = () => {
     setIsOpen(true)
-    if(subreddixList.length === 0) getSubreddixList()
   }
 
   const closeSubreddixList = () => {
     setIsOpen(false)
-    if (!selectedSubreddix.includes("r/") && selectedSubreddix !== '') setSelectedSubreddix(`r/${selectedSubreddix}`)
-  }
-
-  const selectSubreddix = (subreddixUrl: string) => {
-    setSelectedSubreddix(`r/${subreddixUrl}`)
+    if (!selectedSubreddixUrl.includes("r/")) setSelectedSubreddixUrl(`r/${selectedSubreddixUrl}`)
   }
 
   const onSelectSubreddix = (subreddix: Subreddix) => {
-    selectSubreddix(subreddix.url)
+    !subreddix.url.includes("r/")
+      ? setSelectedSubreddixUrl(`r/${subreddix.url}`)
+      : setSelectedSubreddixUrl(subreddix.url)
+    setSelectedSubreddix(subreddix)
   }
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFilterValue(e.target.value)
-    setSelectedSubreddix(e.target.value)
+    setSelectedSubreddixUrl(e.target.value)
   }
 
   return (
@@ -61,10 +53,9 @@ function SubreddixFinder({...props}, ref: Ref<HTMLInputElement>) {
                onClick={openSubreddixList}
                onBlur={closeSubreddixList}
                onChange={handleInputChange}
-               value={selectedSubreddix}
+               value={selectedSubreddixUrl}
                placeholder="Select a community"/>
-        {isOpen && <SubreddixList subreddixs={subreddixList} onSelect={onSelectSubreddix} filterValue={filterValue}/>}
-
+        {isOpen && <SubreddixList onSelect={onSelectSubreddix} filterValue={filterValue}/>}
       </Box>
       <FormHelperText>
         In which Subreddix do you want to publish a post?
@@ -74,12 +65,17 @@ function SubreddixFinder({...props}, ref: Ref<HTMLInputElement>) {
 }
 
 interface SubreddixListProps {
-  subreddixs: Subreddix[],
   onSelect: (subreddix: Subreddix) => void
   filterValue: string
 }
 
-function SubreddixList({ subreddixs, onSelect, filterValue }: SubreddixListProps) {
+function SubreddixList({ onSelect, filterValue }: SubreddixListProps) {
+  const [subreddixList, setSubreddixList] = useState<Subreddix[]>([])
+
+  useAsyncEffect(async () => {
+    const result = await axios.get("/r");
+    setSubreddixList(result.data)
+  }, [])
 
   return (
     <Box
@@ -91,7 +87,7 @@ function SubreddixList({ subreddixs, onSelect, filterValue }: SubreddixListProps
       overflowY="hidden"
       zIndex="100000"
     >
-      {subreddixs
+      {subreddixList
         .filter(subreddix => filterValue === '' || subreddix.name.includes(filterValue))
         .map(subreddix => {
         return <Box key={subreddix.id}>

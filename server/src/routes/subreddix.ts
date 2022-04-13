@@ -52,7 +52,13 @@ router.post('/', authHandler, async (req, res) => {
 
 router.get('/', authHandler, async (req, res) => {
   try {
-    const subreddixs = await DbClient.subreddix.findMany()
+    const subreddixs = await DbClient.subreddix.findMany({
+      include: {
+        _count: {
+          select: { Subscribers: true, Posts: true },
+        },
+      }
+    })
     return res.send(subreddixs);
   } catch(err) {
     console.log(err);

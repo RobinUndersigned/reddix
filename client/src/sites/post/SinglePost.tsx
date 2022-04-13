@@ -28,7 +28,6 @@ function SinglePost() {
   const getPost = async () => {
     const post = await axios.get(`/posts/${postId}`)
     setSinglePost(post.data)
-    console.log(post.data)
   }
 
   useAsyncEffect(async () => {

@@ -13,6 +13,9 @@ import {
 import JoditEditor from "jodit-react";
 import SubreddixFinder from "../subreddix/SubreddixFinder";
 import {editorConfig} from "../../utils/editorConfig";
+import {Subreddix} from "../../interfaces/Subreddix";
+import useAsyncEffect from "use-async-effect";
+import axios from "axios";
 
 type EditorVariant = "text" | "link"
 
@@ -25,6 +28,7 @@ function PostEditor({ variant, onSubmit }: PostEditorProps) {
   const [postContent, setPostContent] = useState('')
   const editor = useRef<JoditEditor>(null)
   const postSubreddix = useRef<HTMLInputElement>(null)
+  const [selectedSubreddix, setSelectedSubreddix] = useState<Partial<Subreddix>>();
 
   const [postTitle, setPostTitle] = useState('')
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => setPostTitle(e.target.value)
@@ -33,6 +37,10 @@ function PostEditor({ variant, onSubmit }: PostEditorProps) {
   const getSubreddixValue = () => {
     // Access reference value:
     return postSubreddix.current ? postSubreddix.current.value : '';
+  }
+
+  const handleSubreddixFinderChange = (subreddix: Partial<Subreddix>) => {
+    setSelectedSubreddix(subreddix)
   }
 
   const Editor = (variant: EditorVariant) => {
@@ -58,7 +66,7 @@ function PostEditor({ variant, onSubmit }: PostEditorProps) {
   return (
     <Stack>
       <FormControl p="1rem">
-        <SubreddixFinder ref={postSubreddix}/>
+        <SubreddixFinder ref={postSubreddix} onChange={handleSubreddixFinderChange}/>
 
         <Box mb="1rem">
           <FormLabel htmlFor='postTitle'>Post Title</FormLabel>
